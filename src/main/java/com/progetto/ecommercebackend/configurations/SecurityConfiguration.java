@@ -29,6 +29,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/books/**").permitAll()
                         .requestMatchers("/api/v1/categories/**").permitAll()
+                        .requestMatchers("/api/v1/authors/**").permitAll()
                         .requestMatchers("/api/v1/cart/**").hasRole("user")
                         .requestMatchers("/api/v1/customers/**").hasRole("user")
                         .requestMatchers("/admin/**").hasRole("admin") //ADMIN

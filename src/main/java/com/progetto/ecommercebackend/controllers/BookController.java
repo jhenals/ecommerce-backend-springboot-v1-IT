@@ -19,48 +19,51 @@ public class BookController {
 
     //CREATE
     @PostMapping
-    public ResponseEntity<ApiResponse> addNewBook(@RequestBody Book book){
+    public ResponseEntity<ApiResponse> addNewBook(@RequestBody Book book) {
         bookService.addNewBook(book);
         return new ResponseEntity<>(new ApiResponse(true, "New book has been added"), HttpStatus.CREATED);
     }
 
     //READ
     @GetMapping
-    public List<Book> getAllBooks(){
+    public List<Book> getAllBooks() {
         return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long bookId){
+    public ResponseEntity<Book> getBookById(@PathVariable Long bookId) {
         Book book = bookService.getBookById(bookId);
         return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
     }
 
     //UPDATE
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<String> updateBook( @PathVariable long id, @RequestBody Book book) {
+    public ResponseEntity<String> updateBook(@PathVariable long id, @RequestBody Book book) {
         bookService.updateBook(id, book);
         return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
     }
 
     //DELETE
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public  ResponseEntity<String> deleteBook(@PathVariable long id){
+    public ResponseEntity<String> deleteBook(@PathVariable long id) {
         bookService.deleteBookById(id);
         return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
     }
 
     @GetMapping("/discounted-books")
-    public List<Book> getAllDiscountedBooks(){
+    public List<Book> getAllDiscountedBooks() {
         return bookService.getAllDiscountedBooks();
     }
 
 
     @GetMapping("/best-sellers")
-    public List<Book> getBestSellingBooks(){
+    public List<Book> getBestSellingBooks() {
         return bookService.getBestSellingBooks();
     }
 
-
-
+    @GetMapping
+    public ResponseEntity<List<Book>> getBooksByAuthorId(@RequestParam Long authorId) {
+        List<Book> books = bookService.getBooksByAuthorId(authorId);
+        return ResponseEntity.ok(books);
+    }
 }

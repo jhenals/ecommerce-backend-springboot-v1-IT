@@ -19,4 +19,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b FROM Book b WHERE b.numPurchases != null")
     List<Book> findAllByNumPurchasesIsNotNull();
+
+    @Query("SELECT b FROM Book  b WHERE b.")
+    List<Book> findAllByAuthorId(Long authorId);
 }

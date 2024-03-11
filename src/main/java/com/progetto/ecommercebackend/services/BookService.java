@@ -1,6 +1,8 @@
 package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.entities.Book;
+import com.progetto.ecommercebackend.entities.BookAuthor;
+import com.progetto.ecommercebackend.repositories.BookAuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ public class BookService {
 
     @Autowired
     BookRepository bookRepository;
+    @Autowired
+    private BookAuthorRepository bookAuthorRepository;
 
     public void addNewBook(Book book) {
         bookRepository.save(book);
@@ -63,4 +67,12 @@ public class BookService {
     }
 
 
+    public List<Book> getBooksByAuthorId(Long authorId) {
+        List<Book> bookList = new ArrayList<>();
+        List<BookAuthor> bookAuthorList = bookAuthorRepository.findAllBooksByAuthorId(authorId);
+        for( BookAuthor ba : bookAuthorList){
+            bookList.add(ba.getBook());
+        }
+        return bookList;
+    }
 }
