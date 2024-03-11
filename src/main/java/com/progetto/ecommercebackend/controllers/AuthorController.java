@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.PathParam;
 import java.util.List;
 
 @RestController
@@ -35,7 +34,7 @@ public class AuthorController {
 
     @RequestMapping(value = "/{authorId}", method= RequestMethod.PUT)
     public ResponseEntity<String> updateAuthorName(@PathVariable("authorId") Long authorId, @RequestBody String author){
-        authorService.updateAuthorName(author);
+        authorService.updateAuthorName(authorId, author);
         return new ResponseEntity<>(author + "'s name is updated.", HttpStatus.OK);
     }
 

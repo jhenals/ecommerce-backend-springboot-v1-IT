@@ -75,4 +75,8 @@ public class BookService {
         }
         return bookList;
     }
+
+    public List<Book> getBooksByCategoryId(Long categoryId) {
+        return bookRepository.findAllBooksByCategoryId(categoryId);
+    }
 }

@@ -61,9 +61,15 @@ public class BookController {
         return bookService.getBestSellingBooks();
     }
 
-    @GetMapping
+    @GetMapping("/authors")
     public ResponseEntity<List<Book>> getBooksByAuthorId(@RequestParam Long authorId) {
         List<Book> books = bookService.getBooksByAuthorId(authorId);
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<Book>> getBooksByCategoryId(@RequestParam Long categoryId) {
+        List<Book> books = bookService.getBooksByCategoryId(categoryId);
         return ResponseEntity.ok(books);
     }
 }
