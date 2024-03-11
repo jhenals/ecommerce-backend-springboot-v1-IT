@@ -2,22 +2,18 @@ package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.repositories.BookRepository;
-import com.progetto.ecommercebackend.repositories.InventoryRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
 
     @Autowired
     BookRepository bookRepository;
-
-    @Autowired
-    InventoryRepository inventoryRepository;
 
     public void addNewBook(Book book) {
         bookRepository.save(book);
@@ -44,7 +40,7 @@ public class BookService {
     public void deleteBookById(long id) {
         Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
         if( bookOptional.isPresent() ){
-            if (inventoryRepository.findById(id).get().getQuantity() == 0) {
+            if (bookOptional.get().getQuantity() == 0) {
                 bookRepository.deleteById(id);
             } else {
                 throw new CustomException("Book can not be deleted because it is not empty in inventory.");
@@ -53,5 +49,18 @@ public class BookService {
             throw new CustomException("Book is not found");
         }
     }
+
+    public List<Book> getAllDiscountedBooks() {
+        return bookRepository.findAllWithDiscount();
+    }
+
+
+    public List<Book> getBestSellingBooks() {
+        List<Book> bestSellingBooks = bookRepository.findAllByNumPurchasesIsNotNull();
+        bestSellingBooks.sort(Comparator.comparingInt(Book::getNumPurchases).reversed());
+        bestSellingBooks.subList(0,9); //Prendo solo i primi 10
+        return bestSellingBooks;
+    }
+
 
 }

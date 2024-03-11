@@ -49,4 +49,18 @@ public class BookController {
         bookService.deleteBookById(id);
         return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
     }
+
+    @GetMapping("/discounted-books")
+    public List<Book> getAllDiscountedBooks(){
+        return bookService.getAllDiscountedBooks();
+    }
+
+
+    @GetMapping("/best-sellers")
+    public List<Book> getBestSellingBooks(){
+        return bookService.getBestSellingBooks();
+    }
+
+
+
 }

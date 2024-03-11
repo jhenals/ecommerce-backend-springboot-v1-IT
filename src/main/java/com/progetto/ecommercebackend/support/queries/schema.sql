@@ -41,6 +41,17 @@ CREATE TABLE ecommercedb.book_author
     author_id BIGINT NULL
 );
 
+
+CREATE TABLE inventory
+(
+    book_id       BIGINT NULL,
+    quantity      INT    NULL,
+    num_purchases INT    NULL
+);
+
+ALTER TABLE inventory
+    ADD CONSTRAINT FK_INVENTORY_ON_BOOK FOREIGN KEY (book_id) REFERENCES book (id);
+
 ALTER TABLE book_author
     ADD CONSTRAINT FK_BOOK_AUTHOR_ON_AUTHOR FOREIGN KEY (author_id) REFERENCES author (id);
 

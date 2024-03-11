@@ -36,4 +36,13 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
+
+    //INVENTORY
+
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "num_purchases")
+    private Integer numPurchases;
+
 }
