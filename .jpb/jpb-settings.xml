@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DatabaseMigrationSettings" lastSelectedDirectory="src\main\java\com\progetto\ecommercebackend\support\queries" />
+  <component name="JpaPluginProjectSettings">
+    <option name="entityNameTemplate" />
+    <option name="generateTypeOnEntity" value="true" />
+    <option name="scaffoldingLanguage" />
+  </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit name="Default">
+        <packages>
+          <package value="com.progetto.ecommercebackend" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>
