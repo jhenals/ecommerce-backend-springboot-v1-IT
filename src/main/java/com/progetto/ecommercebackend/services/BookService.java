@@ -2,6 +2,7 @@ package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.BookAuthor;
+import com.progetto.ecommercebackend.repositories.AuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookAuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -68,12 +68,7 @@ public class BookService {
 
 
     public List<Book> getBooksByAuthorId(Long authorId) {
-        List<Book> bookList = new ArrayList<>();
-        List<BookAuthor> bookAuthorList = bookAuthorRepository.findAllBooksByAuthorId(authorId);
-        for( BookAuthor ba : bookAuthorList){
-            bookList.add(ba.getBook());
-        }
-        return bookList;
+       return bookAuthorRepository.findAllByAuthorId(authorId);
     }
 
     public List<Book> getBooksByCategoryId(Long categoryId) {

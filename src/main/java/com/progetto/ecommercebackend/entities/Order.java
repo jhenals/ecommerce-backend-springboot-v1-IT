@@ -5,11 +5,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "Order")
 @Table(name = "orders")
 public class Order {
     @Id
@@ -17,9 +18,8 @@ public class Order {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "order_date")
-    private Date orderDate;
+    @Column(name = "date_order")
+    private LocalDateTime dateOrder;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
@@ -29,7 +29,16 @@ public class Order {
     @Column(name = "order_status")
     private OrderStatus orderStatus;
 
-    @Column(name = "total")
-    private Double total;
+    @Column(name = "total_amount")
+    private Double totalAmount;
+
+    @Column(name = "recipient_name")
+    private String recipientName;
+
+    @Column(name = "shipping_address")
+    private String shippingAddress;
+
+    @Embedded
+    private OrderDetail orderDetail;
 
 }

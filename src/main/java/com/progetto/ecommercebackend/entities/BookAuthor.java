@@ -15,7 +15,6 @@ import java.util.Set;
 @Table(name = "book_author")
 public class BookAuthor {
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;

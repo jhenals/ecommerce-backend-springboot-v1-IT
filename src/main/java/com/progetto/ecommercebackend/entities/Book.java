@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "Book")
 @Table(name = "book")
 public class Book {
     @Id
@@ -29,6 +31,8 @@ public class Book {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "final_price")
+    private Double finalPrice;
     @Column(name = "publication_date")
     private LocalDate publicationDate;
 
@@ -44,5 +48,17 @@ public class Book {
 
     @Column(name = "num_purchases")
     private Integer numPurchases;
+
+    public Double getFinalPrice() {
+        if (discount != null) {
+            double discountAmount = (price * discount) / 100.0;
+            double discountedPrice = BigDecimal.valueOf(price - discountAmount)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue();
+            return discountedPrice;
+        } else {
+            return price;
+        }
+    }
 
 }
