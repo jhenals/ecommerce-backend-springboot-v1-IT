@@ -74,4 +74,10 @@ public class BookService {
     public List<Book> getBooksByCategoryId(Long categoryId) {
         return bookRepository.findAllBooksByCategoryId(categoryId);
     }
+
+    public void updateBookQuantityInInventory(Long bookId, Integer qty) {
+        Book book = bookRepository.findBookById(bookId);
+        book.setQuantity(qty);
+        bookRepository.save(book);
+    }
 }

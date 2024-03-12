@@ -1,8 +1,10 @@
 package com.progetto.ecommercebackend.services;
 
+import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.Order;
 import com.progetto.ecommercebackend.entities.OrderDetail;
 import com.progetto.ecommercebackend.entities.User;
+import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
 import com.progetto.ecommercebackend.repositories.UserRepository;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +25,9 @@ public class OrderService {
 
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    BookRepository bookRepository;
 
 
     public void checkOut(String userId, String recipientName, String shippingAddress, List<OrderDetail> orderDetailList) {
@@ -41,6 +47,15 @@ public class OrderService {
         newOrder.setOrderStatus(OrderStatus.CREATED);
         for ( OrderDetail od : orderDetailList ){
             newOrder.setOrderDetail(od);
+            //update number of purchases in book entity
+            Book book = bookRepository.findBookById(od.getBook().getId());
+            if( book.getQuantity()-1 <0 )
+                throw new RuntimeException("Not enough stock for book" + od.getBook().getTitle() +".");
+            book.setQuantity(book.getQuantity()-1);
+            book.setNumPurchases(book.getNumPurchases()+1);
+            bookRepository.save(book);
+            bookRepository.save(book);
+            //new order is created
             orderRepository.save(newOrder);
         }
 
@@ -52,5 +67,38 @@ public class OrderService {
             totAmount += od.getBook().getFinalPrice()*od.getQuantity();
         }
         return totAmount;
+    }
+
+
+    public List<Order> getAllOrdersByUserId(String userId) {
+        return orderRepository.findAllByUserId(userId);
+    }
+
+    public List<OrderDetail> getAllOrderDetailsByUserIdAndOrderId(String userId, Long orderId) {
+        List <OrderDetail> orderDetailList = new ArrayList<>();
+        List<Order> orderList = orderRepository.findAllByUserIdAndOrderId(userId, orderId);
+        for( Order o : orderList){
+            orderDetailList.add(o.getOrderDetail());
+        }
+        return orderDetailList;
+    }
+
+    public List<Order> getAllOrdersByUserIdAndOrderStatus(String userId, OrderStatus orderStatus) {
+        return orderRepository.findAllByUserIdAndOrderStatus(userId, orderStatus);
+    }
+
+    public void cancelOrder(String userId, Long orderId) {
+        List<Order> orderList = orderRepository.findAllByUserIdAndOrderId(userId, orderId);
+        for(Order order : orderList ){
+            orderRepository.delete(order);
+        }
+    }
+
+    public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+        List<Order> orderList = orderRepository.findAllByOrderId(orderId);
+        for (Order order : orderList){
+            order.setOrderStatus(orderStatus);
+            orderRepository.save(order);
+        }
     }
 }

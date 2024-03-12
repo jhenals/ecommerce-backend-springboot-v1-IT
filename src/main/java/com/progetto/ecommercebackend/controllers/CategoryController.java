@@ -6,6 +6,7 @@ import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class CategoryController {
     }
 
     @PostMapping("/category")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> addNewCategory(@RequestBody String category){
         try {
             categoryService.addNewCategory(category);
@@ -33,6 +35,7 @@ public class CategoryController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteCategoryById(@PathVariable("id") Long id ){
         categoryService.deleteCategoryById(id);
         return new ResponseEntity<>("Category with id "+ id + " is deleted from the database", HttpStatus.OK);
