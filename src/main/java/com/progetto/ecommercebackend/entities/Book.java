@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Blob;
+import java.sql.NClob;
 import java.time.LocalDate;
 
 @Getter
@@ -25,6 +27,8 @@ public class Book {
     private String coverUrl;
 
 
+
+
     @Column(name = "discount")
     private Integer discount;
 
@@ -41,6 +45,8 @@ public class Book {
     private Category category;
 
 
+
+
     //INVENTORY
 
     @Column(name = "quantity")
@@ -48,6 +54,10 @@ public class Book {
 
     @Column(name = "num_purchases")
     private Integer numPurchases;
+
+    @Lob
+    @Column(name = "description")
+    private NClob description;
 
     public Double getFinalPrice() {
         if (discount != null) {

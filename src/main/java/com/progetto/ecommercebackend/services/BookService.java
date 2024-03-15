@@ -1,5 +1,6 @@
 package com.progetto.ecommercebackend.services;
 
+import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.BookAuthor;
 import com.progetto.ecommercebackend.repositories.AuthorRepository;
@@ -16,28 +17,46 @@ public class BookService {
 
     @Autowired
     BookRepository bookRepository;
+
+    @Autowired
+    AuthorRepository authorRepository;
+
     @Autowired
     private BookAuthorRepository bookAuthorRepository;
 
-    public void addNewBook(Book book) {
+    public BookAuthor addNewBook(Book book, Author author) {
         bookRepository.save(book);
+        BookAuthor bookAuthor = new BookAuthor();
+        bookAuthor.setBook(book);
+        bookAuthor.setAuthor(author);
+        return bookAuthorRepository.save(bookAuthor);
     }
 
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
+    public List<BookAuthor> getAllBookAuthors() {
+        return bookAuthorRepository.findAll();
+    }
+
     public Book getBookById(Long bookId) {
-        return bookRepository.findBookById(bookId);
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if( bookOptional.isPresent() ){
+            return bookOptional.get();
+        }else{
+            throw new CustomException("Book not found.");
+        }
     }
 
     public void updateBook(long id, Book book) {
         Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
         if(bookOptional.isPresent()) {
-            Book newBook = book;
+            Book newBook = bookOptional.get();
+            newBook = book;
             bookRepository.save(newBook);
         }else{
-            throw  new CustomException("Book is not found.");
+            throw  new CustomException("Book is not found");
         }
     }
 
@@ -62,13 +81,21 @@ public class BookService {
     public List<Book> getBestSellingBooks() {
         List<Book> bestSellingBooks = bookRepository.findAllByNumPurchasesIsNotNull();
         bestSellingBooks.sort(Comparator.comparingInt(Book::getNumPurchases).reversed());
-        bestSellingBooks.subList(0,9); //Prendo solo i primi 10
+        if(bestSellingBooks.size()>10){
+            bestSellingBooks.subList(0,9); //Prendo solo i primi 1
+        }
+
         return bestSellingBooks;
     }
 
 
     public List<Book> getBooksByAuthorId(Long authorId) {
-       return bookAuthorRepository.findAllByAuthorId(authorId);
+       List<BookAuthor> bookAuthorList =  bookAuthorRepository.findAllByAuthorId(authorId);
+       List<Book> bookList= new ArrayList<>();
+       for( BookAuthor ba : bookAuthorList ){
+           bookList.add(ba.getBook());
+       }
+       return bookList;
     }
 
     public List<Book> getBooksByCategoryId(Long categoryId) {
@@ -76,8 +103,27 @@ public class BookService {
     }
 
     public void updateBookQuantityInInventory(Long bookId, Integer qty) {
-        Book book = bookRepository.findBookById(bookId);
-        book.setQuantity(qty);
-        bookRepository.save(book);
+        Optional<Book> book = bookRepository.findById(bookId);
+        if(book.isPresent()) {
+            book.get().setQuantity(qty);
+            bookRepository.save(book.get());
+        }else{
+            throw new CustomException("Book not found.");
+        }
+    }
+
+
+    public BookAuthor getBookAuthorByBook(Book book) {
+        return bookAuthorRepository.findByBookId(book.getId());
+    }
+
+    public void incrementNumPurchases(Long bookId) {
+        Optional<Book> book = bookRepository.findById(bookId);
+        if(book.isPresent()) {
+            book.get().setNumPurchases(book.get().getNumPurchases()+1);
+            bookRepository.save(book.get());
+        }else{
+            throw new CustomException("Book not found.");
+        }
     }
 }

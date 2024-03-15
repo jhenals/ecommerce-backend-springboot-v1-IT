@@ -11,5 +11,8 @@ import java.util.List;
 public interface BookAuthorRepository extends JpaRepository<BookAuthor, Long> {
 
     @Query("SELECT b FROM BookAuthor b WHERE b.author.id = :authorId")
-    List<Book> findAllByAuthorId(@Param("authorId") Long authorId);
+    List<BookAuthor> findAllByAuthorId(@Param("authorId") Long authorId);
+
+    @Query("SELECT b FROM BookAuthor b WHERE b.book.id = :bookId")
+    BookAuthor findByBookId(@Param("bookId") Long bookId);
 }

@@ -1,8 +1,12 @@
 package com.progetto.ecommercebackend.controllers;
 
+import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
+import com.progetto.ecommercebackend.entities.BookAuthor;
+import com.progetto.ecommercebackend.repositories.BookAuthorRepository;
 import com.progetto.ecommercebackend.services.BookService;
 import com.progetto.ecommercebackend.support.common.ApiResponse;
+import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +21,14 @@ public class BookController {
 
     @Autowired
     BookService bookService;
+    @Autowired
+    private BookAuthorRepository bookAuthorRepository;
 
     //CREATE
     @PostMapping
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<ApiResponse> addNewBook(@RequestBody Book book) {
-        bookService.addNewBook(book);
+    public ResponseEntity<ApiResponse> addNewBook(@RequestBody Book book, @RequestBody Author author) {
+        bookService.addNewBook(book, author);
         return new ResponseEntity<>(new ApiResponse(true, "New book has been added"), HttpStatus.CREATED);
     }
 
@@ -32,26 +38,15 @@ public class BookController {
         return bookService.getAllBooks();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long bookId) {
+    @GetMapping("/books-authors")
+    public List<BookAuthor> getAllBookAuthors(){
+        return bookService.getAllBookAuthors();
+    }
+
+    @GetMapping("/book-author")
+    public BookAuthor getBookAuthorByBookId(@RequestParam Long bookId) {
         Book book = bookService.getBookById(bookId);
-        return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
-    }
-
-    //UPDATE
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBook(@PathVariable long id, @RequestBody Book book) {
-        bookService.updateBook(id, book);
-        return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
-    }
-
-    //DELETE
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> deleteBook(@PathVariable long id) {
-        bookService.deleteBookById(id);
-        return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
+        return bookService.getBookAuthorByBook(book);
     }
 
     @GetMapping("/discounted-books")
@@ -77,11 +72,34 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    //UPDATE
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> updateBook(@PathVariable long id, @RequestBody Book book) {
+        bookService.updateBook(id, book);
+        return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
+    }
 
     @RequestMapping(value = ("inventory-quantity"), method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestBody Integer qty){
+    public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){
         bookService.updateBookQuantityInInventory(bookId, qty);
         return new ResponseEntity<>("Book quantity is updated", HttpStatus.OK);
     }
+
+    @RequestMapping(value = ("num-purchases"), method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('ROLE_user')")
+    public ResponseEntity<String> incrementNumPurchases(@RequestParam Long bookId){
+        bookService.incrementNumPurchases(bookId);
+        return new ResponseEntity<>("Number of purchase is updated", HttpStatus.OK);
+    }
+
+    //DELETE
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> deleteBook(@PathVariable long id) {
+        bookService.deleteBookById(id);
+        return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
+    }
+
 }
