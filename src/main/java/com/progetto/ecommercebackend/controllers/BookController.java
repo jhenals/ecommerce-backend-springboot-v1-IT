@@ -2,18 +2,17 @@ package com.progetto.ecommercebackend.controllers;
 
 import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
-import com.progetto.ecommercebackend.entities.BookAuthor;
-import com.progetto.ecommercebackend.repositories.BookAuthorRepository;
 import com.progetto.ecommercebackend.services.BookService;
 import com.progetto.ecommercebackend.support.common.ApiResponse;
-import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/books")
@@ -21,33 +20,30 @@ public class BookController {
 
     @Autowired
     BookService bookService;
-    @Autowired
-    private BookAuthorRepository bookAuthorRepository;
 
     //CREATE
     @PostMapping
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<ApiResponse> addNewBook(@RequestBody Book book, @RequestBody Author author) {
-        bookService.addNewBook(book, author);
-        return new ResponseEntity<>(new ApiResponse(true, "New book has been added"), HttpStatus.CREATED);
+    public ResponseEntity<Book> createNewBook(@RequestBody Book book, @RequestParam List<Long> authorIds) {
+        bookService.addNewBook(book, authorIds);
+        return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
     //READ
     @GetMapping
-    public List<Book> getAllBooks() {
-        return bookService.getAllBooks();
+    public ResponseEntity<List<Book>> getAllBooks() {
+        List<Book> bookList = bookService.getAllBooks();
+        return new ResponseEntity<>(bookList, HttpStatus.OK);
     }
 
-    @GetMapping("/books-authors")
-    public List<BookAuthor> getAllBookAuthors(){
-        return bookService.getAllBookAuthors();
+    @GetMapping("/author")
+    public ResponseEntity<List<Book>> getAllBooksOfAuthor(@RequestParam(name = "id") Long authorId){
+        List<Book> booksOfAuthor = bookService.getAllBooksOfAuthor(authorId);
+        return new ResponseEntity<>(booksOfAuthor, HttpStatus.OK);
     }
 
-    @GetMapping("/book-author")
-    public BookAuthor getBookAuthorByBookId(@RequestParam Long bookId) {
-        Book book = bookService.getBookById(bookId);
-        return bookService.getBookAuthorByBook(book);
-    }
+      /*
+
 
     @GetMapping("/discounted-books")
     public List<Book> getAllDiscountedBooks() {
@@ -101,5 +97,7 @@ public class BookController {
         bookService.deleteBookById(id);
         return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
     }
+
+     */
 
 }

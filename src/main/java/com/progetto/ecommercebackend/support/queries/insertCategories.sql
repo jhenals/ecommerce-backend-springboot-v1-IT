@@ -1,0 +1,10 @@
+INSERT INTO ecommercedb.category (id, name, value) VALUES (1, 'Classics', 'classics');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (2, 'Romance', 'romance');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (3, 'Science Fiction and Fantasy', 'science-fiction-and-fantasy');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (4, 'Mystery and Thriller', 'mystery-and-thriller');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (5, 'Non-fiction', 'non-fiction');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (6, 'Young Adult', 'young-adult');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (7, 'Kids', 'kids');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (8, 'Graphic Novels and Comics', 'graphic-novels-and-comics');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (9, 'Poetry', 'poetry');
+INSERT INTO ecommercedb.category (id, name, value) VALUES (10, 'Action and Adventure', 'action-and-adventure');

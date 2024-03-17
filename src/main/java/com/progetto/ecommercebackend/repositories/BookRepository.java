@@ -1,7 +1,6 @@
 package com.progetto.ecommercebackend.repositories;
 
 import com.progetto.ecommercebackend.entities.Book;
-import com.progetto.ecommercebackend.entities.BookAuthor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +22,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId")
     List<Book> findAllBooksByCategoryId(@Param("categoryId") Long categoryId);
+
 
 }

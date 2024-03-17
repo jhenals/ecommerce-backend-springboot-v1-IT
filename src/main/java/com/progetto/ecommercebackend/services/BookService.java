@@ -2,17 +2,18 @@ package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
-import com.progetto.ecommercebackend.entities.BookAuthor;
 import com.progetto.ecommercebackend.repositories.AuthorRepository;
-import com.progetto.ecommercebackend.repositories.BookAuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
+@Transactional
 public class BookService {
 
     @Autowired
@@ -21,6 +22,36 @@ public class BookService {
     @Autowired
     AuthorRepository authorRepository;
 
+    public Book addNewBook( @NotNull Book book, @NotNull List<Long> authorIds) {
+        Set<Author> authors = new HashSet<>();
+        for ( Long authorId : authorIds ){
+            Optional<Author> authorOptional = authorRepository.findById(authorId);
+            if (authorOptional.isPresent() ) {
+                Author author = authorOptional.get();
+                author.getBooks().add(book);
+                authorRepository.save(author);
+            }
+        }
+        book.setAuthors(authors);
+        Book savedBook = bookRepository.save(book);
+        return savedBook;
+    }
+
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    public List<Book> getAllBooksOfAuthor(Long authorId) {
+        Optional<Author> authorOptional =  authorRepository.findById(authorId);
+        if( authorOptional.isPresent() ){
+            return authorOptional.get().getBooks().stream().toList();
+        }else{
+            throw new CustomException("Error in getting books written by author with id" + authorId);
+        }
+    }
+
+
+    /*
     @Autowired
     private BookAuthorRepository bookAuthorRepository;
 
@@ -32,12 +63,11 @@ public class BookService {
         return bookAuthorRepository.save(bookAuthor);
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
 
     public List<BookAuthor> getAllBookAuthors() {
-        return bookAuthorRepository.findAll();
+        List<BookAuthor> bookAuthorList=  bookAuthorRepository.findAll();
+        return new ArrayList<>(bookAuthorList);
+
     }
 
     public Book getBookById(Long bookId) {
@@ -126,4 +156,6 @@ public class BookService {
             throw new CustomException("Book not found.");
         }
     }
+
+     */
 }
