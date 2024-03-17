@@ -48,4 +48,18 @@ public class CategoryService {
             throw new CustomException("Category can not be deleted");
         }
     }
+
+    public Category updateCategoryById(Long id, Category category) {
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        if( categoryOptional.isPresent() ){
+            categoryRepository.deleteCategoryById(id);
+            Category savedCategory = new Category();
+            category.setId(category.getId());
+            category.setName(category.getName());
+            category.setValue(category.getValue());
+            return categoryRepository.save(category);
+        }else{
+            throw new CustomException("Category with id"+ id + " can not be updated.");
+        }
+    }
 }

@@ -34,6 +34,13 @@ public class CategoryController {
         }
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> updateCategory(@PathVariable("id") Long id , @RequestBody Category category){
+        categoryService.updateCategoryById(id, category);
+        return new ResponseEntity<>("Category with id "+ id + " is updated from the database", HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteCategoryById(@PathVariable("id") Long id ){
