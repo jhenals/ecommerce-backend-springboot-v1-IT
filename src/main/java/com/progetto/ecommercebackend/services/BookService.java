@@ -50,34 +50,25 @@ public class BookService {
         }
     }
 
-
-    /*
-    @Autowired
-    private BookAuthorRepository bookAuthorRepository;
-
-    public BookAuthor addNewBook(Book book, Author author) {
-        bookRepository.save(book);
-        BookAuthor bookAuthor = new BookAuthor();
-        bookAuthor.setBook(book);
-        bookAuthor.setAuthor(author);
-        return bookAuthorRepository.save(bookAuthor);
+    public List<Book> getAllDiscountedBooks() {
+        return bookRepository.findAllWithDiscount();
     }
 
 
-    public List<BookAuthor> getAllBookAuthors() {
-        List<BookAuthor> bookAuthorList=  bookAuthorRepository.findAll();
-        return new ArrayList<>(bookAuthorList);
-
-    }
-
-    public Book getBookById(Long bookId) {
-        Optional<Book> bookOptional = bookRepository.findById(bookId);
-        if( bookOptional.isPresent() ){
-            return bookOptional.get();
-        }else{
-            throw new CustomException("Book not found.");
+    public List<Book> getBestSellingBooks() {
+        List<Book> bestSellingBooks = bookRepository.findAllByNumPurchasesIsNotNull();
+        bestSellingBooks.sort(Comparator.comparingInt(Book::getNumPurchases).reversed());
+        if(bestSellingBooks.size()>10){
+            bestSellingBooks.subList(0,9); //Prendo solo i primi 1
         }
+
+        return bestSellingBooks;
     }
+
+    public List<Book> getBooksByCategoryId(Long categoryId) {
+        return bookRepository.findAllBooksByCategoryId(categoryId);
+    }
+
 
     public void updateBook(long id, Book book) {
         Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
@@ -103,34 +94,16 @@ public class BookService {
         }
     }
 
-    public List<Book> getAllDiscountedBooks() {
-        return bookRepository.findAllWithDiscount();
-    }
-
-
-    public List<Book> getBestSellingBooks() {
-        List<Book> bestSellingBooks = bookRepository.findAllByNumPurchasesIsNotNull();
-        bestSellingBooks.sort(Comparator.comparingInt(Book::getNumPurchases).reversed());
-        if(bestSellingBooks.size()>10){
-            bestSellingBooks.subList(0,9); //Prendo solo i primi 1
+    public void incrementNumPurchases(Long bookId) {
+        Optional<Book> book = bookRepository.findById(bookId);
+        if(book.isPresent()) {
+            book.get().setNumPurchases(book.get().getNumPurchases()+1);
+            bookRepository.save(book.get());
+        }else{
+            throw new CustomException("Book not found.");
         }
-
-        return bestSellingBooks;
     }
 
-
-    public List<Book> getBooksByAuthorId(Long authorId) {
-       List<BookAuthor> bookAuthorList =  bookAuthorRepository.findAllByAuthorId(authorId);
-       List<Book> bookList= new ArrayList<>();
-       for( BookAuthor ba : bookAuthorList ){
-           bookList.add(ba.getBook());
-       }
-       return bookList;
-    }
-
-    public List<Book> getBooksByCategoryId(Long categoryId) {
-        return bookRepository.findAllBooksByCategoryId(categoryId);
-    }
 
     public void updateBookQuantityInInventory(Long bookId, Integer qty) {
         Optional<Book> book = bookRepository.findById(bookId);
@@ -142,20 +115,4 @@ public class BookService {
         }
     }
 
-
-    public BookAuthor getBookAuthorByBook(Book book) {
-        return bookAuthorRepository.findByBookId(book.getId());
-    }
-
-    public void incrementNumPurchases(Long bookId) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if(book.isPresent()) {
-            book.get().setNumPurchases(book.get().getNumPurchases()+1);
-            bookRepository.save(book.get());
-        }else{
-            throw new CustomException("Book not found.");
-        }
-    }
-
-     */
 }

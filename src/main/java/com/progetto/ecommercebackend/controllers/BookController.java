@@ -42,9 +42,6 @@ public class BookController {
         return new ResponseEntity<>(booksOfAuthor, HttpStatus.OK);
     }
 
-      /*
-
-
     @GetMapping("/discounted-books")
     public List<Book> getAllDiscountedBooks() {
         return bookService.getAllDiscountedBooks();
@@ -54,12 +51,6 @@ public class BookController {
     @GetMapping("/best-sellers")
     public List<Book> getBestSellingBooks() {
         return bookService.getBestSellingBooks();
-    }
-
-    @GetMapping("/authors")
-    public ResponseEntity<List<Book>> getBooksByAuthorId(@RequestParam Long authorId) {
-        List<Book> books = bookService.getBooksByAuthorId(authorId);
-        return ResponseEntity.ok(books);
     }
 
     @GetMapping("/categories")
@@ -75,6 +66,8 @@ public class BookController {
         bookService.updateBook(id, book);
         return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
     }
+
+
 
     @RequestMapping(value = ("inventory-quantity"), method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
@@ -97,7 +90,5 @@ public class BookController {
         bookService.deleteBookById(id);
         return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
     }
-
-     */
 
 }
