@@ -7,6 +7,7 @@ import com.progetto.ecommercebackend.entities.User;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
 import com.progetto.ecommercebackend.repositories.UserRepository;
+import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class OrderService {
     BookRepository bookRepository;
 
 
-    public void checkOut(String userId, String recipientName, String shippingAddress, List<OrderDetail> orderDetailList) {
+    public void checkOut(String userId, OrderForm orderForm) {
         User user= null;
         Optional<User> userOptional = userRepository.findById(userId);
         if( userOptional.isPresent() ){
@@ -41,21 +42,18 @@ public class OrderService {
         Order newOrder = new Order();
         newOrder.setUser(user);
         newOrder.setDateOrder(LocalDateTime.now());
-        newOrder.setRecipientName(recipientName);
-        newOrder.setShippingAddress(shippingAddress);
-        newOrder.setTotalAmount(calculateTotalAmount(orderDetailList));
+        newOrder.setRecipientName(orderForm.getRecipientName());
+        newOrder.setShippingAddress(orderForm.getShippingAddress());
+        newOrder.setTotalAmount(calculateTotalAmount(orderForm.getOrderDetailList()));
         newOrder.setOrderStatus(OrderStatus.CREATED);
-        for ( OrderDetail od : orderDetailList ){
+        for ( OrderDetail od : orderForm.getOrderDetailList() ){
             newOrder.setOrderDetail(od);
-            //update number of purchases in book entity
             Book book = bookRepository.findBookById(od.getBook().getId());
             if( book.getQuantity()-1 <0 )
                 throw new RuntimeException("Not enough stock for book" + od.getBook().getTitle() +".");
             book.setQuantity(book.getQuantity()-1);
             book.setNumPurchases(book.getNumPurchases()+1);
             bookRepository.save(book);
-            bookRepository.save(book);
-            //new order is created
             orderRepository.save(newOrder);
         }
 

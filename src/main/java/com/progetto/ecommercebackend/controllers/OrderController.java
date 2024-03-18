@@ -3,6 +3,7 @@ package com.progetto.ecommercebackend.controllers;
 import com.progetto.ecommercebackend.entities.Order;
 import com.progetto.ecommercebackend.entities.OrderDetail;
 import com.progetto.ecommercebackend.services.OrderService;
+import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -22,19 +23,17 @@ public class OrderController {
 
 
     //CREATE
-    @PostMapping("/{userId}")
+    @PostMapping("/user")
     public ResponseEntity<String> checkOut(
-            @PathVariable("userId") String userId,
-            @RequestBody String recipientName,
-            @RequestBody String shippingAddress,
-            @RequestBody List<OrderDetail> orderDetailList){
-        orderService.checkOut(userId, recipientName, shippingAddress, orderDetailList);
+            @RequestParam(name = "id") String userId,
+            @RequestBody OrderForm orderForm){
+        orderService.checkOut(userId, orderForm);
         return new ResponseEntity<>("New order is created", HttpStatus.CREATED);
     }
 
     //READ
-    @GetMapping("/{userId}")
-    public List<OrderDetail> getAllOrderDetailsByUserIdAndOrderId(@PathVariable("userId") String userId, @RequestParam Long orderId){
+    @GetMapping("/user")
+    public List<OrderDetail> getAllOrderDetailsByUserIdAndOrderId(@RequestParam(name = "id") String userId, @RequestParam Long orderId){
         return orderService.getAllOrderDetailsByUserIdAndOrderId(userId, orderId);
     }
 
