@@ -94,25 +94,4 @@ public class BookService {
         }
     }
 
-    public void incrementNumPurchases(Long bookId) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if(book.isPresent()) {
-            book.get().setNumPurchases(book.get().getNumPurchases()+1);
-            bookRepository.save(book.get());
-        }else{
-            throw new CustomException("Book not found.");
-        }
-    }
-
-
-    public void updateBookQuantityInInventory(Long bookId, Integer qty) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if(book.isPresent()) {
-            book.get().setQuantity(qty);
-            bookRepository.save(book.get());
-        }else{
-            throw new CustomException("Book not found.");
-        }
-    }
-
 }

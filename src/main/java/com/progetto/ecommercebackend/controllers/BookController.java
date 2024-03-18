@@ -68,21 +68,6 @@ public class BookController {
     }
 
 
-
-    @RequestMapping(value = ("inventory-quantity"), method = RequestMethod.PUT)
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){
-        bookService.updateBookQuantityInInventory(bookId, qty);
-        return new ResponseEntity<>("Book quantity is updated", HttpStatus.OK);
-    }
-
-    @RequestMapping(value = ("num-purchases"), method = RequestMethod.PUT)
-    @PreAuthorize("hasRole('ROLE_user')")
-    public ResponseEntity<String> incrementNumPurchases(@RequestParam Long bookId){
-        bookService.incrementNumPurchases(bookId);
-        return new ResponseEntity<>("Number of purchase is updated", HttpStatus.OK);
-    }
-
     //DELETE
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_admin')")
