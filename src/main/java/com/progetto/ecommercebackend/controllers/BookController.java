@@ -74,6 +74,7 @@ public class BookController {
     @GetMapping("/book")
     public ResponseEntity<Book> getBookById(@RequestParam(name = "id") Long bookId) {
         Book book= bookService.getBookById(bookId);
+        book.setFinalPrice(book.getFinalPrice());
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 

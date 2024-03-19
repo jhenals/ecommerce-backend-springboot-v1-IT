@@ -22,11 +22,10 @@ public class OrderDetail {
     @Column(name = "quantity")
     private Integer quantity;
 
-    /*
+
     @Column(name = "price")
     private Double finalPrice;
 
-     */
 
 
 

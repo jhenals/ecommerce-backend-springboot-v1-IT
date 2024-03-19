@@ -44,7 +44,8 @@ public class OrderService {
         newOrder.setDateOrder(LocalDateTime.now());
         newOrder.setRecipientName(orderForm.getRecipientName());
         newOrder.setShippingAddress(orderForm.getShippingAddress());
-        newOrder.setTotalAmount(calculateTotalAmount(orderForm.getOrderDetailList()));
+        newOrder.setPhoneNumber(orderForm.getPhoneNumber());
+        newOrder.setTotalAmount(orderForm.getTotalAmount());
         newOrder.setOrderStatus(OrderStatus.CREATED);
         for ( OrderDetail od : orderForm.getOrderDetailList() ){
             newOrder.setOrderDetail(od);

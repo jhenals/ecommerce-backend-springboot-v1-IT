@@ -11,6 +11,9 @@ import java.util.List;
 public class OrderForm {
     private String recipientName;
     private String shippingAddress;
+    private String phoneNumber;
     private List<OrderDetail> orderDetailList;
+
+    private Double totalAmount;
 
 }

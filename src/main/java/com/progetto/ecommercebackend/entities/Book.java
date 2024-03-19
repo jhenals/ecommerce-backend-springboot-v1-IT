@@ -40,7 +40,6 @@ public class Book {
     @Column(name = "price")
     private Double price;
 
-    @Transient
     @Column(name = "final_price")
     private Double finalPrice;
     @Column(name = "publication_date")
@@ -80,6 +79,7 @@ public class Book {
             return price;
         }
     }
+
 
     @Override
     public final boolean equals(Object o) {

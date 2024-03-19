@@ -38,6 +38,9 @@ public class Order {
     @Column(name = "shipping_address")
     private String shippingAddress;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Embedded
     private OrderDetail orderDetail;
 
