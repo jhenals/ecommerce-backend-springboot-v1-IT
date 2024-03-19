@@ -5,9 +5,11 @@ import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Transactional
 @Service
 public class InventoryService {
 

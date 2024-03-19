@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/authors")
@@ -32,6 +33,11 @@ public class AuthorController {
     @GetMapping
     public List<Author> getAllAuthors(){
         return authorService.getAllAuthors();
+    }
+
+    @GetMapping("/book")
+    public Set<Author> getAllAuthorsOfBook(@RequestParam(name = "id") Long bookId){
+        return authorService.getAllAuthorsOfBook(bookId);
     }
 
     @GetMapping("/{authorId}")

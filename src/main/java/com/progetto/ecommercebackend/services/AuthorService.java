@@ -1,7 +1,9 @@
 package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.entities.Author;
+import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.repositories.AuthorRepository;
+import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,12 +11,15 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AuthorService {
 
     @Autowired
     AuthorRepository authorRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     public List<Author> getAllAuthors() {
         return authorRepository.findAll();
@@ -56,6 +61,15 @@ public class AuthorService {
             return authorOptional.get();
         }else{
             throw new CustomException("Author doesn't exist.");
+        }
+    }
+
+    public Set<Author> getAllAuthorsOfBook(Long bookId) {
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if( bookOptional.isPresent() ){
+            return bookOptional.get().getAuthors();
+        }else{
+            throw new CustomException("Error in retrieving book's author(s).");
         }
     }
 }

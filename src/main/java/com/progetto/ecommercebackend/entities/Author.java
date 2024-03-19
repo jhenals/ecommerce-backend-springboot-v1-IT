@@ -25,6 +25,7 @@ public class Author {
     @JoinTable(name = "books_authors",
             joinColumns =  @JoinColumn(name = "author_id", referencedColumnName = "id") ,
             inverseJoinColumns = @JoinColumn(name = "book_id" , referencedColumnName = "id") )
+    @JsonIgnore
     private Set<Book> books = new LinkedHashSet<>();
 
     @Override

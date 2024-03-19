@@ -5,15 +5,25 @@ import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.repositories.AuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
 @Service
 @Transactional
+@Slf4j
 public class BookService {
 
     @Autowired
@@ -28,6 +38,7 @@ public class BookService {
             Optional<Author> authorOptional = authorRepository.findById(authorId);
             if (authorOptional.isPresent() ) {
                 Author author = authorOptional.get();
+                //authors.add(author);
                 author.getBooks().add(book);
                 authorRepository.save(author);
             }
@@ -37,8 +48,12 @@ public class BookService {
         return savedBook;
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+
+    public Page<Book> findAll(int pageNo, int pageSize, String sortBy, String sortDirection){
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        return bookRepository.findAll(pageable);
     }
 
     public List<Book> getAllBooksOfAuthor(Long authorId) {
@@ -64,10 +79,14 @@ public class BookService {
 
         return bestSellingBooks;
     }
+    /*
 
     public List<Book> getBooksByCategoryId(Long categoryId) {
+
         return bookRepository.findAllBooksByCategoryId(categoryId);
     }
+
+     */
 
 
     public void updateBook(long id, Book book) {
@@ -87,11 +106,52 @@ public class BookService {
             if (bookOptional.get().getQuantity() == 0) {
                 bookRepository.deleteById(id);
             } else {
-                throw new CustomException("Book can not be deleted because it is not empty in inventory.");
+                throw new CustomException("Book can not be deleted because stock is not empty in inventory.");
             }
         }else{
             throw new CustomException("Book is not found");
         }
+    }
+
+    public void assignBookToAuthors(Long bookId, List<Long> authorIds) {
+        Set<Author> authors = new HashSet<>();
+        Optional<Book> bookOptional = bookRepository.findById(bookId);
+        if( bookOptional.isPresent() ){
+            Book book = bookOptional.get();
+            for ( Long authorId : authorIds ){
+                Optional<Author> authorOptional = authorRepository.findById(authorId);
+                if (authorOptional.isPresent() ) {
+                    Author author = authorOptional.get();
+                    authors.add(author);
+                    author.getBooks().add(book);
+                    authorRepository.save(author);
+                }
+            }
+            book.setAuthors(authors);
+            bookRepository.save(book);
+        }
+    }
+
+    public Page<Book> getBooks( int page, int size, String sortBy, String sortDirection){
+        log.info("Fetching books for page {} of size {}", page, size);
+        return bookRepository.findAll( PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy)));
+    }
+
+    public Book getBookById(Long bookId) {
+        return bookRepository.findBookById(bookId);
+    }
+
+    public Page<Book> getAllBooksOfCategories(List<Long> categoryIds, int page, int size) {
+        Pageable pageable =  PageRequest.of(page, size);
+        List<Book> bookList = new ArrayList<>();
+        for( Long categoryId : categoryIds ){
+            bookList.addAll( bookRepository.findByCategoryId(categoryId));
+        }
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bookList.size());
+        List<Book> sublist = bookList.subList(start, end);
+
+        return new PageImpl<>(sublist, pageable, bookList.size());
     }
 
 }

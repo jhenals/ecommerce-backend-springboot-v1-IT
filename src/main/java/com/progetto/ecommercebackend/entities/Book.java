@@ -30,7 +30,7 @@ public class Book {
     private String coverUrl;
 
     @Lob
-    @Column(name = "description")
+    @Column(name = "description" , columnDefinition = "LONGTEXT")
     private String description;
 
 
@@ -40,6 +40,7 @@ public class Book {
     @Column(name = "price")
     private Double price;
 
+    @Transient
     @Column(name = "final_price")
     private Double finalPrice;
     @Column(name = "publication_date")
@@ -55,7 +56,7 @@ public class Book {
                     CascadeType.MERGE
             },
             mappedBy = "books")
-    @JsonIgnore
+
     private Set<Author> authors = new HashSet<>();
 
 
