@@ -1,12 +1,17 @@
 package com.progetto.ecommercebackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,9 +24,9 @@ public class Order {
     private Long id;
 
     @Column(name = "date_order")
-    private LocalDateTime dateOrder;
+    private LocalDateTime dateCreated;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -41,7 +46,24 @@ public class Order {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Embedded
-    private OrderDetail orderDetail;
+    @JsonManagedReference
+    @Valid
+    @OneToMany(mappedBy = "pk.order", orphanRemoval = true)
+    private List<OrderBook> orderBooks = new ArrayList<>();
+
+    @Transient
+    public Double getTotalPrice(){
+        double sum= 0D;
+        List<OrderBook> orderBooks = getOrderBooks();
+        for(OrderBook ob : orderBooks ){
+            sum += ob.getTotalPrice();
+        }
+        return sum;
+    }
+
+    @Transient
+    public int getNumberOfBooksInCart(){
+        return this.orderBooks.size();
+    }
 
 }
