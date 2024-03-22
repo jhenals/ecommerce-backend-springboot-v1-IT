@@ -34,7 +34,7 @@ public class OrderBook {
     }
 
     @Transient
-    public Double getTotalPrice() {
+    public Double getBookFinalPrice() {
       return getBook().getFinalPrice()* getQuantity();
     }
 

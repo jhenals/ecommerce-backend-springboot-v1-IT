@@ -56,7 +56,7 @@ public class Order {
         double sum= 0D;
         List<OrderBook> orderBooks = getOrderBooks();
         for(OrderBook ob : orderBooks ){
-            sum += ob.getTotalPrice();
+            sum += ob.getBookFinalPrice();
         }
         return sum;
     }

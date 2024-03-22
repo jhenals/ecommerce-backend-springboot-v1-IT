@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
+//@Slf4j
 public class OrderService {
 
     @Autowired
@@ -37,6 +37,7 @@ public class OrderService {
 
     @Autowired
     BookRepository bookRepository;
+
 
     @Transactional
     public Order getPendingCart(String userId) {
@@ -152,86 +153,4 @@ public class OrderService {
 
 
 
-    /*
-    public List<Order> checkOut(String userId, OrderForm orderForm) {
-        log.info("Order of user {}: {}", userId, orderForm.toString());
-        List<Order> orders = new ArrayList<>(); //return
-        User user= null;
-        Optional<User> userOptional = userRepository.findById(userId);
-        if( userOptional.isPresent() ){
-            user= userOptional.get();
-        }else{
-            throw new CustomException("Error in retrieving the custumer");
-        }
-        Order newOrder = new Order();
-        newOrder.setUser(user);
-        newOrder.setDateCreated(LocalDateTime.now());
-        newOrder.setRecipientName(orderForm.getRecipientName());
-        newOrder.setShippingAddress(orderForm.getShippingAddress());
-        newOrder.setPhoneNumber(orderForm.getPhoneNumber());
-        newOrder.setTotalAmount(orderForm.getTotalAmount());
-        newOrder.setOrderStatus(OrderStatus.CREATED);
-        if(orderForm.getOrderDetailList().size()==0){
-            throw new CustomException("There is no product in cart.");
-        }else{
-            for ( OrderDetail od : orderForm.getOrderDetailList() ){
-                newOrder.setOrderDetail(od);
-                Book book = bookRepository.findBookById(od.getBook().getId());
-            /*
-
-            if( book.getQuantity()-1 <0 )
-                throw new RuntimeException("Not enough stock for book" + od.getBook().getTitle() +".");
-            book.setQuantity(book.getQuantity()-1);
-
-
-                book.setNumPurchases(book.getNumPurchases()+1);
-                bookRepository.save(book);
-                orders.add(orderRepository.save(newOrder));
-            }
-            return orders;
-        }
-    }
-
-    private Double calculateTotalAmount(List<OrderDetail> orderDetailList) {
-        Double totAmount = 0D;
-        for(OrderDetail od : orderDetailList ){
-            totAmount += od.getBook().getFinalPrice()*od.getQuantity();
-        }
-        return totAmount;
-    }
-
-
-    public List<Order> getAllOrdersByUserId(String userId) {
-        return orderRepository.findAllByUserId(userId);
-    }
-
-    public List<OrderDetail> getAllOrderDetailsByUserIdAndOrderId(String userId, Long orderId) {
-        List <OrderDetail> orderDetailList = new ArrayList<>();
-        List<Order> orderList = orderRepository.findAllByUserIdAndOrderId(userId, orderId);
-        for( Order o : orderList){
-            orderDetailList.add(o.getOrderDetail());
-        }
-        return orderDetailList;
-    }
-
-    public List<Order> getAllOrdersByUserIdAndOrderStatus(String userId, OrderStatus orderStatus) {
-        return orderRepository.findAllByUserIdAndOrderStatus(userId, orderStatus);
-    }
-
-    public void cancelOrder(String userId, Long orderId) {
-        List<Order> orderList = orderRepository.findAllByUserIdAndOrderId(userId, orderId);
-        for(Order order : orderList ){
-            orderRepository.delete(order);
-        }
-    }
-
-    public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
-        List<Order> orderList = orderRepository.findAllByOrderId(orderId);
-        for (Order order : orderList){
-            order.setOrderStatus(orderStatus);
-            orderRepository.save(order);
-        }
-    }
-
-     */
 }

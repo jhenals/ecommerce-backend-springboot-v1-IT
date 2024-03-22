@@ -14,12 +14,9 @@ public class OrderBookService {
     @Autowired
     OrderBookRepository orderBookRepository;
 
-    public OrderBook create(OrderBook orderBook) {
-        return orderBookRepository.save(orderBook);
-    }
 
-    @Transactional(readOnly = false)
     public List<OrderBook> getItemsInPendingCart(Long cartId) {
         return orderBookRepository.findAllByOrderId(cartId);
     }
+
 }
