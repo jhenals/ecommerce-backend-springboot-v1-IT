@@ -84,6 +84,15 @@ public class OrderController {
         }
     }
 
+    @RequestMapping(value = "/order", method = RequestMethod.PUT , consumes = {"application/json"})
+    public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody Order order) {
+        try{
+            return new ResponseEntity<>( orderService.updateOrderStatus(orderId, order), HttpStatus.OK);
+        }  catch(CustomException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not updated!", e);
+        }
+    }
+
     @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT, consumes = {"application/json"})
     public ResponseEntity increaseBookQtyInCart(@PathVariable("userId") String userId, @RequestParam(name = "id") Long bookId)  {
         try{
@@ -112,7 +121,7 @@ public class OrderController {
     }
 
 
-    @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity checkout(@PathVariable("userId") String userId,
                                    @RequestBody OrderForm orderform) {
         try{
@@ -121,22 +130,5 @@ public class OrderController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checkout failed. Please try again later!", e);
         }
     }
-
-    private void validateBooksExistence( List<OrderBook> orderBookList ){
-        List<OrderBook> list = orderBookList
-                .stream()
-                .filter(op -> Objects.isNull(bookService.getBookById(op
-                        .getBook()
-                        .getId())))
-                .collect(Collectors.toList());
-
-        if( !CollectionUtils.isEmpty(list)){
-            new ResourceNotFoundException("Book not found");
-        }
-    }
-
-
-
-
 
 }

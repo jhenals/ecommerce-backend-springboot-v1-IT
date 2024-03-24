@@ -30,4 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Order findByUserIdAndOrderStatus(
             @Param("userId") String userId,
             @Param("orderStatus") OrderStatus orderStatus);
+
+    @Query("SELECT o FROM Order  o WHERE o.orderStatus!= 'PENDING' ")
+    List<Order> findAllByOrderStatus();
 }

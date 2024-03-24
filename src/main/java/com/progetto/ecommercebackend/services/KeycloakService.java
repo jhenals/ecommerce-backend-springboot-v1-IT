@@ -44,13 +44,9 @@ public class KeycloakService {
         user.setId(userRep.getId());
         user.setFirstName(userRep.getFirstName());
         user.setLastName(userRep.getLastName());
-        /*
         user.setEmail(userRep.getEmail());
         user.setRoles(extractRoles(userRep));
-        //user.setCreatedAt(extractCreatedAt(userRep));
-        user.setMobile(extractAttribute(userRep,"mobile"));
-        user.setAddress(extractAttribute(userRep,"address"));
-         */
+        user.setCreatedAt(extractCreatedAt(userRep));
         return user;
     }
 
@@ -88,20 +84,7 @@ public class KeycloakService {
         userRep.setId(user.getId());
         userRep.setFirstName(user.getFirstName());
         userRep.setLastName(user.getLastName());
-        /*
-        userRep.setFirstName(user.getFirstName());
-        userRep.setLastName(user.getLastName());
         userRep.setEmail(user.getEmail());
-        userRep.setEnabled(true);
-        userRep.setEmailVerified(true);
-        List<CredentialRepresentation> creds = new ArrayList<>();
-        CredentialRepresentation cred = new CredentialRepresentation();
-        cred.setTemporary(false);
-        cred.setValue(user.getPassword());
-        creds.add(cred);
-        userRep.setCredentials(creds);
-
-         */
         return userRep;
     }
 

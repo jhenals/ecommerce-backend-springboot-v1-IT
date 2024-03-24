@@ -159,6 +159,16 @@ public class OrderService {
 
 
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository.findAllByOrderStatus();
+    }
+
+    public Order updateOrderStatus(Long orderId, Order order) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if(orderOptional.isPresent()) {
+            Order updateOrder = order;
+            return  orderRepository.save(updateOrder);
+        }else{
+            throw new CustomException("Order status can not be updated.");
+        }
     }
 }

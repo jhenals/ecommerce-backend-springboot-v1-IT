@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity(name = "User")
@@ -19,11 +23,26 @@ public class User {
     @Column(name = "lastname")
     private String lastname;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name ="createdAt")
+    private LocalDateTime createdAt;
+
+    @ElementCollection
+    @Column(name = "role")
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "owner_id"))
+    private Set<String> roles = new LinkedHashSet<>();
+
     public void setFirstName(String firstName) {
         this.firstname = firstName;
     }
     public void setLastName(String lastName) {
         this.lastname = lastName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getFirstName() {
@@ -34,6 +53,10 @@ public class User {
         return this.lastname;
     }
 
+
+    public String getEmail() {
+        return email;
+    }
 
 
 //Other infos are managed by Keycloak
