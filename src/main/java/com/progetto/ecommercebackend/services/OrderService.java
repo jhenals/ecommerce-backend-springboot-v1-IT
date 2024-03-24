@@ -10,6 +10,7 @@ import com.progetto.ecommercebackend.repositories.OrderRepository;
 import com.progetto.ecommercebackend.repositories.UserRepository;
 import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
+import com.progetto.ecommercebackend.support.enums.OrderStatusDTO;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,10 +163,11 @@ public class OrderService {
         return orderRepository.findAllByOrderStatus();
     }
 
-    public Order updateOrderStatus(Long orderId, Order order) {
+    public Order updateOrderStatus(Long orderId, OrderStatusDTO orderStatus) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if(orderOptional.isPresent()) {
-            Order updateOrder = order;
+            Order updateOrder = orderOptional.get();
+            updateOrder.setOrderStatus(orderStatus.getOrderStatus());
             return  orderRepository.save(updateOrder);
         }else{
             throw new CustomException("Order status can not be updated.");

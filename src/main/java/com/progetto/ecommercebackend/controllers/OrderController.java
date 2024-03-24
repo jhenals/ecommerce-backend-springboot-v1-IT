@@ -9,6 +9,7 @@ import com.progetto.ecommercebackend.services.OrderService;
 import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.domain.HttpResponse;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
+import com.progetto.ecommercebackend.support.enums.OrderStatusDTO;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import com.progetto.ecommercebackend.support.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -85,9 +86,9 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.PUT , consumes = {"application/json"})
-    public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody Order order) {
+    public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody OrderStatusDTO orderStatus) {
         try{
-            return new ResponseEntity<>( orderService.updateOrderStatus(orderId, order), HttpStatus.OK);
+            return new ResponseEntity<>( orderService.updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
         }  catch(CustomException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not updated!", e);
         }
