@@ -51,6 +51,7 @@ public class OrderService {
                 pendingCart.setOrderStatus(OrderStatus.PENDING);
                 pendingCart = orderRepository.save(pendingCart);
             }
+            pendingCart.setTotalAmount(pendingCart.getTotalAmount());
             return pendingCart;
         } else {
             throw new CustomException("User not found.");
@@ -112,9 +113,9 @@ public class OrderService {
     }
 
     @Transactional(readOnly = false)
-    public OrderBook incrementBookQtyInCart(String userId, Book book) {
+    public OrderBook increaseBookQtyInCart(String userId, Long bookId) {
         Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
-        OrderBook orderBook = orderBookRepository.findByBookIdAndOrderId(book.getId(), pendingCart.getId());
+        OrderBook orderBook = orderBookRepository.findByBookIdAndOrderId(bookId, pendingCart.getId());
         if (orderBook == null){
             throw new CustomException("Book is not present in cart");
         }else{
@@ -152,5 +153,12 @@ public class OrderService {
     }
 
 
+    public List<Order> getAllOrdersOfUser(String userId) {
+        return orderRepository.findAllByUserId(userId);
+    }
 
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 }

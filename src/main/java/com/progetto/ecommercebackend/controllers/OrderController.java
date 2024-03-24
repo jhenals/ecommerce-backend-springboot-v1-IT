@@ -39,6 +39,18 @@ public class OrderController {
     @Autowired
     OrderBookService orderBookService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public List<Order> getAllOrders(){
+        return orderService.getAllOrders();
+    }
+
+
+    @GetMapping("/user")
+    public List<Order> getAllOrdersOfUser(@RequestParam(name = "id") String userId){
+        return orderService.getAllOrdersOfUser(userId);
+    }
+
 
     @GetMapping("/pending-cart")
     public Order getPendingCart(@RequestParam String userId){
@@ -72,10 +84,10 @@ public class OrderController {
         }
     }
 
-    @RequestMapping(value = "/{userId}/incr-quantity", method = RequestMethod.PUT, consumes = {"application/json"})
-    public ResponseEntity increaseBookQtyInCart(@PathVariable("userId") String userId, @Valid @RequestBody Book book)  {
+    @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT, consumes = {"application/json"})
+    public ResponseEntity increaseBookQtyInCart(@PathVariable("userId") String userId, @RequestParam(name = "id") Long bookId)  {
         try{
-            return new ResponseEntity<>( orderService.incrementBookQtyInCart(userId, book), HttpStatus.OK);
+            return new ResponseEntity<>( orderService.increaseBookQtyInCart(userId, bookId), HttpStatus.OK);
         }catch(CustomException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book quantity can not be increased!", e);
         }
@@ -92,7 +104,7 @@ public class OrderController {
     }
 
 
-    @RequestMapping(value = "/{userId}/reset", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{userId}/reset", method = RequestMethod.DELETE)
     public ResponseEntity resetCart(@PathVariable("userId") String userId){
         Order pendingCart = getPendingCart(userId);
         pendingCart= orderService.resetCart(userId, pendingCart.getId());
