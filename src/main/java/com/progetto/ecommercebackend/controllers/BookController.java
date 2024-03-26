@@ -6,6 +6,7 @@ import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.services.BookService;
 import com.progetto.ecommercebackend.support.common.ApiResponse;
 import com.progetto.ecommercebackend.support.domain.HttpResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
@@ -35,13 +36,6 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
-    @PostMapping("/{bookId}/authors")
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> assignBookToAuthors(@PathVariable("bookId") Long bookId, @RequestParam(name = "id") List<Long> authorIds) {
-        bookService.assignBookToAuthors(bookId, authorIds);
-        return new ResponseEntity<>("Book with id=" + bookId + " is assigned to author(s)=" + authorIds , HttpStatus.CREATED);
-    }
-
     //READ
     @GetMapping
     public ResponseEntity<HttpResponse> getBooks(
@@ -63,6 +57,34 @@ public class BookController {
                         .statusCode(HttpStatus.OK.value())
                         .build());
     }
+
+
+    //UPDATE
+    @RequestMapping(value = "/book", method = RequestMethod.PUT)
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> updateBook(@RequestParam long id, @RequestBody @Valid Book book) {
+        bookService.updateBook(id, book);
+        return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
+    }
+
+
+    //DELETE
+    @RequestMapping(value = "/book", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> deleteBook(@RequestParam long id) {
+        bookService.deleteBookById(id);
+        return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
+    }
+
+
+    @PostMapping("/{bookId}/authors")
+    @PreAuthorize("hasRole('ROLE_admin')")
+    public ResponseEntity<String> assignBookToAuthors(@PathVariable("bookId") Long bookId, @RequestParam(name = "id") List<Long> authorIds) {
+        bookService.assignBookToAuthors(bookId, authorIds);
+        return new ResponseEntity<>("Book with id=" + bookId + " is assigned to author(s)=" + authorIds , HttpStatus.CREATED);
+    }
+
+
 
 
     @GetMapping("/author")
@@ -105,23 +127,6 @@ public class BookController {
     @GetMapping("/best-sellers")
     public List<Book> getBestSellingBooks() {
         return bookService.getBestSellingBooks();
-    }
-
-    //UPDATE
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBook(@PathVariable long id, @RequestBody Book book) {
-        bookService.updateBook(id, book);
-        return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
-    }
-
-
-    //DELETE
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> deleteBook(@PathVariable long id) {
-        bookService.deleteBookById(id);
-        return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
     }
 
 

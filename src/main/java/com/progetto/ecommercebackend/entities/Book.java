@@ -1,6 +1,9 @@
 package com.progetto.ecommercebackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,13 +52,13 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
+
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
             },
             mappedBy = "books")
-
     private Set<Author> authors = new HashSet<>();
 
 
@@ -67,6 +70,8 @@ public class Book {
     @Column(name = "num_purchases")
     private Integer numPurchases;
 
+    @Column(name = "publisher")
+    private String publisher;
 
     public Double getFinalPrice() {
         if (discount != null) {

@@ -4,6 +4,7 @@ import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.repositories.AuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
+import com.progetto.ecommercebackend.repositories.CategoryRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ import java.util.*;
 @Transactional
 @Slf4j
 public class BookService {
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
     BookRepository bookRepository;
@@ -38,12 +41,12 @@ public class BookService {
             Optional<Author> authorOptional = authorRepository.findById(authorId);
             if (authorOptional.isPresent() ) {
                 Author author = authorOptional.get();
-                //authors.add(author);
+                authors.add(author);
                 author.getBooks().add(book);
                 authorRepository.save(author);
             }
         }
-        book.setAuthors(authors);
+
         Book savedBook = bookRepository.save(book);
         return savedBook;
     }
@@ -79,21 +82,15 @@ public class BookService {
 
         return bestSellingBooks;
     }
-    /*
-
-    public List<Book> getBooksByCategoryId(Long categoryId) {
-
-        return bookRepository.findAllBooksByCategoryId(categoryId);
-    }
-
-     */
-
 
     public void updateBook(long id, Book book) {
         Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
         if(bookOptional.isPresent()) {
+            Set<Author> authors = book.getAuthors();
             Book newBook = bookOptional.get();
             newBook = book;
+            newBook.setAuthors(authors);
+            newBook.setCategory(book.getCategory());
             bookRepository.save(newBook);
         }else{
             throw  new CustomException("Book is not found");
@@ -103,15 +100,16 @@ public class BookService {
     public void deleteBookById(long id) {
         Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
         if( bookOptional.isPresent() ){
-            if (bookOptional.get().getQuantity() == 0) {
-                bookRepository.deleteById(id);
-            } else {
-                throw new CustomException("Book can not be deleted because stock is not empty in inventory.");
+            Set<Author>authors = bookOptional.get().getAuthors();
+            for( Author a : authors ){
+                a.getBooks().remove(bookOptional.get());
+                authorRepository.save(a);
             }
+            bookRepository.deleteById(id);
         }else{
             throw new CustomException("Book is not found");
         }
-    }
+    };
 
     public void assignBookToAuthors(Long bookId, List<Long> authorIds) {
         Set<Author> authors = new HashSet<>();
