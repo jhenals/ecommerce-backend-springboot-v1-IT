@@ -2,12 +2,15 @@ package com.progetto.ecommercebackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
 @Table(name = "order_book")
 public class OrderBook {
     @EmbeddedId

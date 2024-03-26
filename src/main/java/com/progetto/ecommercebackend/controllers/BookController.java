@@ -1,14 +1,11 @@
 package com.progetto.ecommercebackend.controllers;
 
-import com.progetto.ecommercebackend.entities.Author;
 import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.services.BookService;
-import com.progetto.ecommercebackend.support.common.ApiResponse;
 import com.progetto.ecommercebackend.support.domain.HttpResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

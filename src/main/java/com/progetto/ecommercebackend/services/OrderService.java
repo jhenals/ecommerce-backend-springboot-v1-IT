@@ -4,22 +4,18 @@ import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.Order;
 import com.progetto.ecommercebackend.entities.OrderBook;
 import com.progetto.ecommercebackend.entities.User;
-import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.repositories.OrderBookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
-import com.progetto.ecommercebackend.repositories.UserRepository;
 import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
 import com.progetto.ecommercebackend.support.enums.OrderStatusDTO;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
-import lombok.extern.slf4j.Slf4j;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,23 +24,21 @@ import java.util.Optional;
 public class OrderService {
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
     OrderRepository orderRepository;
 
     @Autowired
     OrderBookRepository orderBookRepository;
 
     @Autowired
-    BookRepository bookRepository;
+    KeycloakService keycloakService;
 
 
     @Transactional
     public Order getPendingCart(String userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
+        Optional<UserRepresentation> userRepresentationOptional = keycloakService.getUserById(userId);
+        if (userRepresentationOptional.isPresent()) {
+            User user = new User();
+            user.setId(userRepresentationOptional.get().getId());
             Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
             if (pendingCart == null) {
                 pendingCart = new Order();
@@ -74,7 +68,6 @@ public class OrderService {
 
     @Transactional(readOnly = false)
     public Order addBookToCart(Book book, String userId) {
-        Optional<User> user = userRepository.findById(userId);
         Order pendingCart =  getPendingCart(userId);
         if(book == null ){
             throw new CustomException("Book is required");
@@ -92,7 +85,6 @@ public class OrderService {
 
     @Transactional(readOnly = false)
     public Order removeBookFromCart(Book book, String userId) {
-        Optional<User> user = userRepository.findById(userId);
         Order pendingCart =  getPendingCart(userId);
         if(book == null ){
             throw new CustomException("Book is required");
@@ -111,6 +103,7 @@ public class OrderService {
         }else{
             throw new CustomException("Book is not present in cart");
         }
+
     }
 
     @Transactional(readOnly = false)
@@ -131,7 +124,14 @@ public class OrderService {
 
     @Transactional(readOnly = false )
     public Order checkout(String userId, OrderForm orderForm) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        User user = new User();
+        Optional<UserRepresentation> userRepresentationOptional = keycloakService.getUserById(userId);
+        if (userRepresentationOptional.isPresent() ) {
+            user.setId(userRepresentationOptional.get().getId());
+        }else{
+            throw new CustomException("User not is not found");
+        }
+
         Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
 
         if( orderForm.getRecipientName()!=null && orderForm.getShippingAddress() != null && orderForm.getPhoneNumber()!=null){
@@ -144,7 +144,7 @@ public class OrderService {
             newOrder.setTotalAmount(pendingCart.getTotalPrice());
             orderRepository.save(newOrder);
             Order newPendingCart = new Order();
-            newPendingCart.setUser(userOptional.get());
+            newPendingCart.setUser(user);
             newPendingCart.setOrderStatus(OrderStatus.PENDING);
             orderRepository.save(newPendingCart);
             return newOrder;

@@ -1,5 +1,6 @@
 package com.progetto.ecommercebackend.support.jwt;
 
+import com.progetto.ecommercebackend.entities.User;
 import io.micrometer.common.KeyValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
@@ -39,6 +40,14 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
                         extractResourceRoles(jwt).stream()
                 )
                 .collect(Collectors.toSet());
+
+        String userId = jwt.getSubject();
+        String firsname = jwt.getClaim("given_name");
+        String  lastname = jwt.getClaim("family_name");
+        String email = jwt.getClaim("email");
+
+        Map<String, Object> claims = jwt.getClaims();
+
         return new JwtAuthenticationToken(
                 jwt,
                 authorities,
@@ -53,6 +62,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         }
         return jwt.getClaim(claimName);
     } //to extract preferred_username from jwt token
+
 
     private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
         Map<String, Object> resourceAccess;
