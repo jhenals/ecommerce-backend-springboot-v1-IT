@@ -29,7 +29,7 @@ public class CategoryService {
 
         Optional<Category> categoryOptional = categoryRepository.findByValue(catValue);
         if( categoryOptional.isPresent()){
-            throw new CustomException("Category already exists in the database.");
+            throw new CustomException("La categoria esiste già nel database.");
         }else{
             String name = category.substring(0,1).toUpperCase() + category.substring(1).toLowerCase();
             Category newCategory = new Category();
@@ -45,7 +45,7 @@ public class CategoryService {
         try{
             categoryRepository.deleteCategoryById(id);
         }catch( CustomException e){
-            throw new CustomException("Category can not be deleted");
+            throw new CustomException("La categoria non può essere eliminata.");
         }
     }
 
@@ -59,7 +59,7 @@ public class CategoryService {
             category.setValue(category.getValue());
             return categoryRepository.save(category);
         }else{
-            throw new CustomException("Category with id"+ id + " can not be updated.");
+            throw new CustomException("La categoria con"+ id + " non può essere aggiornata.");
         }
     }
 }

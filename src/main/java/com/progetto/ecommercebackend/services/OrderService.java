@@ -4,6 +4,7 @@ import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.Order;
 import com.progetto.ecommercebackend.entities.OrderBook;
 import com.progetto.ecommercebackend.entities.User;
+import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.repositories.OrderBookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
 import com.progetto.ecommercebackend.repositories.UserRepository;
@@ -34,9 +35,10 @@ public class OrderService {
     KeycloakService keycloakService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
 
-    @Transactional
     public Order getPendingCart(String userId) {
         Optional<UserRepresentation> userRepresentationOptional = keycloakService.getUserById(userId);
 
@@ -65,7 +67,7 @@ public class OrderService {
         return pendingCart;
     }
 
-    @Transactional(readOnly = false)
+
     public Order resetCart(String userId, Long orderId) {
         Optional<Order> pendingCartOptional = orderRepository.findById(orderId);
         if (pendingCartOptional.isPresent()) {
@@ -78,8 +80,8 @@ public class OrderService {
         }
     }
 
-    @Transactional(readOnly = false)
     public Order addBookToCart(Book book, String userId) {
+
         Order pendingCart =  getPendingCart(userId);
         if(book == null ){
             throw new CustomException("Book is required");
@@ -88,6 +90,11 @@ public class OrderService {
         if( orderBookOptional.isPresent() ){
             throw new CustomException("Book is already present in cart");
         }else{
+            // Decrement book quantity in inventory
+            Book book1 = bookRepository.findBookById(book.getId());
+            book1.setQuantity(book1.getQuantity()-1);
+            bookRepository.save(book1);
+
             OrderBook orderBook = new OrderBook(pendingCart, book, 1);
             orderBookRepository.save(orderBook);
             return pendingCart;
@@ -95,7 +102,7 @@ public class OrderService {
         }
     }
 
-    @Transactional(readOnly = false)
+
     public Order removeBookFromCart(Book book, String userId) {
         Order pendingCart =  getPendingCart(userId);
         if(book == null ){

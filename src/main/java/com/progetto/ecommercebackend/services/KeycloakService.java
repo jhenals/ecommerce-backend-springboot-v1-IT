@@ -112,7 +112,7 @@ public class KeycloakService {
                     .remove();
             userRepository.deleteById(userId);
         }else{
-            throw new CustomException("Cannot delete user");
+            throw new CustomException("Errore nell'eliminare l'utente.");
         }
 
     }

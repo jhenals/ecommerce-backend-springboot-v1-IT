@@ -24,9 +24,9 @@ public class CategoryController {
     public ResponseEntity<String> addNewCategory(@RequestBody String category){
         try {
             categoryService.addNewCategory(category);
-            return new ResponseEntity<>("Category " + category + " is added to the list", HttpStatus.CREATED);
+            return new ResponseEntity<>("La categoria " + category + " è stata aggiunta nel database.", HttpStatus.CREATED);
         }catch(CustomException e){
-            throw new CustomException("Category can not be added.");
+            return new ResponseEntity<>("Impossibile aggiungere la categoria.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -42,7 +42,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateCategory(@PathVariable("id") Long id , @RequestBody Category category){
         categoryService.updateCategoryById(id, category);
-        return new ResponseEntity<>("Category with id "+ id + " is updated from the database", HttpStatus.OK);
+        return new ResponseEntity<>("La categoria con ID "+ id + " è stata aggiornata nel database", HttpStatus.OK);
     }
 
     //DELETE
@@ -50,6 +50,6 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteCategoryById(@PathVariable("id") Long id ){
         categoryService.deleteCategoryById(id);
-        return new ResponseEntity<>("Category with id "+ id + " is deleted from the database", HttpStatus.OK);
+        return new ResponseEntity<>("La categoria con ID "+ id + " è stata eliminata nel database", HttpStatus.OK);
     }
 }

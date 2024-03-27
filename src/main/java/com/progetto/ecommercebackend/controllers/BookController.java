@@ -40,7 +40,7 @@ public class BookController {
             @RequestParam Optional<Integer> size,
             @RequestParam Optional<String> sortBy,
             @RequestParam Optional<String> sortDirection
-            ){
+            ) {
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(now().toString())
@@ -54,16 +54,6 @@ public class BookController {
                         .statusCode(HttpStatus.OK.value())
                         .build());
     }
-
-
-    @PostMapping("/{bookId}/authors")
-    @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> assignBookToAuthors(@PathVariable("bookId") Long bookId, @RequestParam(name = "id") List<Long> authorIds) {
-        bookService.assignBookToAuthors(bookId, authorIds);
-        return new ResponseEntity<>("Book with id=" + bookId + " is assigned to author(s)=" + authorIds , HttpStatus.CREATED);
-    }
-
-
 
 
     @GetMapping("/author")
@@ -91,7 +81,7 @@ public class BookController {
                                 categoryIds.orElse(null),
                                 page.orElse(0),
                                 size.orElse(12))))
-                        .message("Books retrieved")
+                        .message("Libri recuperati")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .build());
@@ -109,13 +99,12 @@ public class BookController {
     }
 
 
-
     //UPDATE
     @RequestMapping(value = "/book", method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateBook(@RequestParam long id, @RequestBody @Valid Book book) {
         bookService.updateBook(id, book);
-        return new ResponseEntity<>("Book with ID " + id + " updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Libro con ID " + id + " è stato aggiornato con successo.", HttpStatus.OK);
     }
 
 
@@ -124,7 +113,7 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteBook(@RequestParam long id) {
         bookService.deleteBookById(id);
-        return new ResponseEntity<>("Book with ID " + id + " deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Libro con ID " + id + " è stato eliminato con successo.", HttpStatus.OK);
     }
 
 }

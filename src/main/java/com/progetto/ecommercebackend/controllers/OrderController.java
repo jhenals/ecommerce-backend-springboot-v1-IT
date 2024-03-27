@@ -46,7 +46,7 @@ public class OrderController {
         try {
             return new ResponseEntity<>(orderService.addBookToCart(book, userId), HttpStatus.OK);
         } catch (CustomException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be added to cart!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Libro non può essere aggiunto al carrello!", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.checkout(userId, orderform), HttpStatus.OK);
         }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checkout failed. Please try again later!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pagamento non riuscito!", e);
         }
     }
 
@@ -97,7 +97,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
         }  catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not updated!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Stato dell'ordine non aggiornato!", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.increaseBookQtyInCart(userId, bookId), HttpStatus.OK);
         }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book quantity can not be increased!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nell'aggiunta della quantità del libro nel carrello.", e);
         }
 
     }
@@ -116,7 +116,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.removeBookFromCart(book,userId), HttpStatus.OK);
         }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book quantity can not be increased!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nella rimozione dei libri dal carrello.", e);
         }
     }
 
@@ -127,7 +127,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.removeBookFromCart(book, userId), HttpStatus.OK);
         }  catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be removed from cart!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Errore nella rimozione dei libri dal carrello.", e);
         }
     }
 

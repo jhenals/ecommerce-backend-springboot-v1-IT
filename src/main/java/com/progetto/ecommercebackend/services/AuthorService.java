@@ -42,7 +42,7 @@ public class AuthorService {
             authorRepository.deleteById(id);
             return authorRepository.save(updatedAuthor);
         }else{
-            throw new CustomException("Author with id "+ id + " is not found");
+            throw new CustomException("L'autore con l'ID "+ id + " non è stato trovato.");
         }
     }
 
@@ -50,7 +50,7 @@ public class AuthorService {
         try{
             authorRepository.deleteById(authorId);
         }catch (CustomException e){
-            throw new CustomException("Author can not be deleted.");
+            throw new CustomException("Cancellazione dell'autore nel database non riuscita.");
         }
 
     }
@@ -60,7 +60,7 @@ public class AuthorService {
         if( authorOptional.isPresent() ){
             return authorOptional.get();
         }else{
-            throw new CustomException("Author doesn't exist.");
+            throw new CustomException("L'autore non esiste nel database.");
         }
     }
 
@@ -69,7 +69,7 @@ public class AuthorService {
         if( bookOptional.isPresent() ){
             return bookOptional.get().getAuthors();
         }else{
-            throw new CustomException("Error in retrieving book's author(s).");
+            throw new CustomException("Errore nel recupero dell'autore/i del libro.");
         }
     }
 }

@@ -46,7 +46,7 @@ public class KeycloakController {
     @RequestMapping(value = "/keycloak/users", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteUserAccount(@RequestParam(name = "id") String userId){
        keycloakService.deleteUserAccount(realm, userId);
-        return new ResponseEntity<>("Account deleted!", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Account eliminato!", HttpStatus.ACCEPTED);
     }
 
     //UPDATE

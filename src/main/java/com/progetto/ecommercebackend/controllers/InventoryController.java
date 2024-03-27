@@ -21,7 +21,7 @@ public class InventoryController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){
         inventoryService.updateBookQuantityInInventory(bookId, qty);
-        return new ResponseEntity<>("Book quantity is updated", HttpStatus.OK);
+        return new ResponseEntity<>("La quantità del libro è stata aggiornata", HttpStatus.OK);
     }
 
     //UPDATE
@@ -29,7 +29,7 @@ public class InventoryController {
     @PreAuthorize("hasRole('ROLE_user')")
     public ResponseEntity<String> incrementNumPurchases(@RequestParam Long bookId){
         inventoryService.incrementNumPurchases(bookId);
-        return new ResponseEntity<>("Number of purchase is updated", HttpStatus.OK);
+        return new ResponseEntity<>("Il numero di acquisti è stato aggiornato", HttpStatus.OK);
     }
 
 

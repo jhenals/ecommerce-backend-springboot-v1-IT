@@ -64,7 +64,7 @@ public class BookService {
         if( authorOptional.isPresent() ){
             return authorOptional.get().getBooks().stream().toList();
         }else{
-            throw new CustomException("Error in getting books written by author with id" + authorId);
+            throw new CustomException("Errore nel recupero dei libri scritti dall'autore con ID " + authorId);
         }
     }
 
@@ -77,7 +77,7 @@ public class BookService {
         List<Book> bestSellingBooks = bookRepository.findAllByNumPurchasesIsNotNull();
         bestSellingBooks.sort(Comparator.comparingInt(Book::getNumPurchases).reversed());
         if(bestSellingBooks.size()>10){
-            bestSellingBooks.subList(0,9); //Prendo solo i primi 1
+            bestSellingBooks.subList(0,9); //Prendo solo i primi 10
         }
 
         return bestSellingBooks;
@@ -93,7 +93,7 @@ public class BookService {
             newBook.setCategory(book.getCategory());
             bookRepository.save(newBook);
         }else{
-            throw  new CustomException("Book is not found");
+            throw  new CustomException("Libro non trovato.");
         }
     }
 
@@ -107,7 +107,7 @@ public class BookService {
             }
             bookRepository.deleteById(id);
         }else{
-            throw new CustomException("Book is not found");
+            throw new CustomException("Libro non trovato.");
         }
     };
 

@@ -34,7 +34,7 @@ public class InventoryService {
             book.get().setNumPurchases(book.get().getNumPurchases()+1);
             bookRepository.save(book.get());
         }else{
-            throw new CustomException("Book not found.");
+            throw new CustomException("Libro non trovato.");
         }
     }
 }

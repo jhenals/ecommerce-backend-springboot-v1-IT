@@ -28,7 +28,7 @@ public class AuthorController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> createNewAuthor(@RequestBody String authorName){
         authorService.addNewAuthor(authorName);
-        return  new ResponseEntity<>(authorName + " is added as new author.", HttpStatus.CREATED);
+        return  new ResponseEntity<>(authorName + " è stato aggiunto come nuovo autore.", HttpStatus.CREATED);
     }
 
     //READ
@@ -52,7 +52,7 @@ public class AuthorController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateAuthorName(@PathVariable("authorId") Long authorId, @RequestBody String author){
         authorService.updateAuthorName(authorId, author);
-        return new ResponseEntity<>(author + "'s name is updated.", HttpStatus.OK);
+        return new ResponseEntity<>(author +  ": il nome è stato aggiornato.", HttpStatus.OK);
     }
 
 
@@ -61,7 +61,7 @@ public class AuthorController {
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteAuthor(@PathVariable("authorId") Long authorId){
         authorService.deleteAuthor(authorId);
-        return new ResponseEntity<>("Author with id "+ authorId + " is deleted.", HttpStatus.OK);
+        return new ResponseEntity<>("L'autore con l'ID "+ authorId + " è stato eliminato.", HttpStatus.OK);
     }
 
 
