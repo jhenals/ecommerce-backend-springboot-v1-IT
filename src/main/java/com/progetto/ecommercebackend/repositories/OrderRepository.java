@@ -33,4 +33,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order  o WHERE o.orderStatus!= 'PENDING' ")
     List<Order> findAllByOrderStatus();
+
+    void deleteByUserId(String userId);
 }

@@ -2,6 +2,9 @@ package com.progetto.ecommercebackend.services;
 
 import com.progetto.ecommercebackend.configurations.KeycloakConfig;
 import com.progetto.ecommercebackend.entities.User;
+import com.progetto.ecommercebackend.repositories.OrderBookRepository;
+import com.progetto.ecommercebackend.repositories.OrderRepository;
+import com.progetto.ecommercebackend.repositories.UserRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.resource.*;
@@ -22,6 +25,12 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class KeycloakService {
+    @Autowired
+    private OrderBookRepository orderBookRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${realm}")
     private String realm;
@@ -101,25 +110,26 @@ public class KeycloakService {
             UsersResource usersResource = realmResource.users();
             usersResource.get(userId)
                     .remove();
+            userRepository.deleteById(userId);
         }else{
             throw new CustomException("Cannot delete user");
         }
 
     }
 
-    /*
-    public void updateUser(String userId, UserDTO userDTO){
-    CredentialRepresentation credential = Credentials
-            .createPasswordCredentials(userDTO.getPassword());
-    UserRepresentation user = new UserRepresentation();
-    user.setUsername(userDTO.getUserName());
-    user.setFirstName(userDTO.getFirstname());
-    user.setLastName(userDTO.getLastName());
-    user.setEmail(userDTO.getEmailId());
-    user.setCredentials(Collections.singletonList(credential));
+    public UserRepresentation updateUserAccount(String userId, String firstname, String lastname) {
+        RealmResource realmResource = keycloak.realm(realm);
+        Optional<User> user = userRepository.findById(userId);
+        UserRepresentation userRep = new UserRepresentation();
+        userRep.setFirstName(firstname);
+        user.get().setFirstName(firstname);
+        userRep.setLastName(lastname);
+        user.get().setLastName(lastname);
+        UsersResource usersResource = realmResource.users();
+        usersResource.get(userId).update(userRep);
+        userRepository.save(user.get());
 
-    UsersResource usersResource = getInstance();
-    usersResource.get(userId).update(user);
-}
-     */
+        return userRep;
+    }
+
 }

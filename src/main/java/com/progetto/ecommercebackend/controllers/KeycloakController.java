@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -46,6 +47,18 @@ public class KeycloakController {
     public ResponseEntity<String> deleteUserAccount(@RequestParam(name = "id") String userId){
        keycloakService.deleteUserAccount(realm, userId);
         return new ResponseEntity<>("Account deleted!", HttpStatus.ACCEPTED);
+    }
+
+    //UPDATE
+    @RequestMapping(value = "keycloak/users", method = RequestMethod.PUT)
+    public ResponseEntity<User> updateUserAccount(@RequestParam(name = "id") String userId, String firstname, String lastname){
+        UserRepresentation userRepresentation = keycloakService.updateUserAccount(userId, firstname, lastname);
+        User updatedUser = new User();
+        updatedUser.setId(userRepresentation.getId());
+        updatedUser.setFirstName(userRepresentation.getFirstName());
+        updatedUser.setLastName(userRepresentation.getLastName());
+        updatedUser.setEmail(userRepresentation.getEmail());
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
 
