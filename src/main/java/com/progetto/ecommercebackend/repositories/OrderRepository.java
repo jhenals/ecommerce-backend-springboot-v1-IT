@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.orderStatus!= 'PENDING'")
     List<Order> findAllByUserId(@Param("userId") String userId);
 
     @Query("SELECT o FROM Order  o WHERE o.user.id = :userId AND o.id = :orderId")

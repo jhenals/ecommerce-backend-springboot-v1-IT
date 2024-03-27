@@ -16,6 +16,7 @@ public class InventoryController {
     @Autowired
     InventoryService inventoryService;
 
+    //UPDATE
     @RequestMapping(value = ("inventory-quantity"), method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){

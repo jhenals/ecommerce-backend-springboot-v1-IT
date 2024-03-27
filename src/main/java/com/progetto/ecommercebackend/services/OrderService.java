@@ -6,6 +6,7 @@ import com.progetto.ecommercebackend.entities.OrderBook;
 import com.progetto.ecommercebackend.entities.User;
 import com.progetto.ecommercebackend.repositories.OrderBookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
+import com.progetto.ecommercebackend.repositories.UserRepository;
 import com.progetto.ecommercebackend.support.common.OrderForm;
 import com.progetto.ecommercebackend.support.enums.OrderStatus;
 import com.progetto.ecommercebackend.support.enums.OrderStatusDTO;
@@ -31,26 +32,37 @@ public class OrderService {
 
     @Autowired
     KeycloakService keycloakService;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Transactional
     public Order getPendingCart(String userId) {
         Optional<UserRepresentation> userRepresentationOptional = keycloakService.getUserById(userId);
-        if (userRepresentationOptional.isPresent()) {
-            User user = new User();
-            user.setId(userRepresentationOptional.get().getId());
-            Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
-            if (pendingCart == null) {
-                pendingCart = new Order();
-                pendingCart.setUser(user);
-                pendingCart.setOrderStatus(OrderStatus.PENDING);
-                pendingCart = orderRepository.save(pendingCart);
-            }
-            pendingCart.setTotalAmount(pendingCart.getTotalAmount());
-            return pendingCart;
-        } else {
+
+        if (userRepresentationOptional.isEmpty()) {
             throw new CustomException("User not found.");
         }
+
+        UserRepresentation userRepresentation = userRepresentationOptional.get();
+        User user = userRepository.findById(userRepresentation.getId())
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setId(userRepresentation.getId());
+                    newUser.setFirstName(userRepresentation.getFirstName());
+                    newUser.setLastName(userRepresentation.getLastName());
+                    return userRepository.save(newUser);
+                });
+
+        Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
+        if (pendingCart == null) {
+            pendingCart = new Order();
+            pendingCart.setUser(user);
+            pendingCart.setOrderStatus(OrderStatus.PENDING);
+            pendingCart = orderRepository.save(pendingCart);
+        }
+
+        return pendingCart;
     }
 
     @Transactional(readOnly = false)

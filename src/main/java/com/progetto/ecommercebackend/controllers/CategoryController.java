@@ -18,11 +18,7 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
 
-    @GetMapping
-    public List<Category> getAllCategories(){
-        return categoryService.getAllCategories();
-    }
-
+    //CREATE
     @PostMapping("/category")
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> addNewCategory(@RequestBody String category){
@@ -34,6 +30,14 @@ public class CategoryController {
         }
     }
 
+    //READ
+    @GetMapping
+    public List<Category> getAllCategories(){
+        return categoryService.getAllCategories();
+    }
+
+
+    //UPDATE
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateCategory(@PathVariable("id") Long id , @RequestBody Category category){
@@ -41,6 +45,7 @@ public class CategoryController {
         return new ResponseEntity<>("Category with id "+ id + " is updated from the database", HttpStatus.OK);
     }
 
+    //DELETE
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteCategoryById(@PathVariable("id") Long id ){

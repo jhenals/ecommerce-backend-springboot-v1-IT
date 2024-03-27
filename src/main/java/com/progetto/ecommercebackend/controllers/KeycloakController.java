@@ -30,6 +30,8 @@ public class KeycloakController {
     @Value("${client-id}")
     private String clientId;
 
+
+    //READ
     @GetMapping("/keycloak/users")
     @PreAuthorize("hasRole('ROLE_admin')")
     public List<User> getAllUsers(){
@@ -39,6 +41,7 @@ public class KeycloakController {
         return keycloakService.mapUsers(userRepresentations);
     }
 
+    //DELETE
     @RequestMapping(value = "/keycloak/users", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteUserAccount(@RequestParam(name = "id") String userId){
        keycloakService.deleteUserAccount(realm, userId);

@@ -40,6 +40,29 @@ public class OrderController {
     @Autowired
     OrderBookService orderBookService;
 
+    //CREATE
+    @PostMapping("/{userId}")
+    public ResponseEntity addBookToCart(@Valid @RequestBody Book book, @PathVariable("userId") String userId ) {
+        try {
+            return new ResponseEntity<>(orderService.addBookToCart(book, userId), HttpStatus.OK);
+        } catch (CustomException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be added to cart!", e);
+        }
+    }
+
+
+    @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.POST)
+    public ResponseEntity checkout(@PathVariable("userId") String userId,
+                                   @RequestBody OrderForm orderform) {
+        try{
+            return new ResponseEntity<>( orderService.checkout(userId, orderform), HttpStatus.OK);
+        }catch(CustomException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checkout failed. Please try again later!", e);
+        }
+    }
+
+
+    //READ
     @GetMapping
     @PreAuthorize("hasRole('ROLE_admin')")
     public List<Order> getAllOrders(){
@@ -66,26 +89,10 @@ public class OrderController {
     }
 
 
-    @PostMapping("/{userId}")
-    public ResponseEntity addBookToCart(@Valid @RequestBody Book book, @PathVariable("userId") String userId ) {
-        try {
-            return new ResponseEntity<>(orderService.addBookToCart(book, userId), HttpStatus.OK);
-        } catch (CustomException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be added to cart!", e);
-        }
-    }
 
+    //UPDATE
 
-    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity removeBookFromCart(@Valid @RequestBody  Book book,@PathVariable("userId") String userId ) {
-        try{
-            return new ResponseEntity<>( orderService.removeBookFromCart(book, userId), HttpStatus.OK);
-        }  catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be removed from cart!", e);
-        }
-    }
-
-    @RequestMapping(value = "/order", method = RequestMethod.PUT , consumes = {"application/json"})
+    @RequestMapping(value = "/order", method = RequestMethod.PUT)
     public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody OrderStatusDTO orderStatus) {
         try{
             return new ResponseEntity<>( orderService.updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
@@ -94,7 +101,7 @@ public class OrderController {
         }
     }
 
-    @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT, consumes = {"application/json"})
+    @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT)
     public ResponseEntity increaseBookQtyInCart(@PathVariable("userId") String userId, @RequestParam(name = "id") Long bookId)  {
         try{
             return new ResponseEntity<>( orderService.increaseBookQtyInCart(userId, bookId), HttpStatus.OK);
@@ -104,12 +111,23 @@ public class OrderController {
 
     }
 
-    @RequestMapping(value = "/{userId}/decr-quantity", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{userId}/decr-quantity", method = RequestMethod.PUT)
     public ResponseEntity decreaseBookQtyInCart(@PathVariable("userId") String userId, @Valid @RequestBody Book book) {
         try{
             return new ResponseEntity<>( orderService.removeBookFromCart(book,userId), HttpStatus.OK);
         }catch(CustomException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book quantity can not be increased!", e);
+        }
+    }
+
+
+    //DELETE
+    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity removeBookFromCart(@Valid @RequestBody  Book book,@PathVariable("userId") String userId ) {
+        try{
+            return new ResponseEntity<>( orderService.removeBookFromCart(book, userId), HttpStatus.OK);
+        }  catch(CustomException e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book can not be removed from cart!", e);
         }
     }
 
@@ -121,15 +139,5 @@ public class OrderController {
         return new ResponseEntity<>(pendingCart, HttpStatus.OK);
     }
 
-
-    @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity checkout(@PathVariable("userId") String userId,
-                                   @RequestBody OrderForm orderform) {
-        try{
-            return new ResponseEntity<>( orderService.checkout(userId, orderform), HttpStatus.OK);
-        }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Checkout failed. Please try again later!", e);
-        }
-    }
 
 }

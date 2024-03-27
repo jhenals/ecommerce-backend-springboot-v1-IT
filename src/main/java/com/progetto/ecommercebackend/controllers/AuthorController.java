@@ -23,6 +23,7 @@ public class AuthorController {
     @Autowired
     BookService bookService;
 
+    //CREATE
     @PostMapping
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> createNewAuthor(@RequestBody String authorName){
@@ -30,6 +31,7 @@ public class AuthorController {
         return  new ResponseEntity<>(authorName + " is added as new author.", HttpStatus.CREATED);
     }
 
+    //READ
     @GetMapping
     public List<Author> getAllAuthors(){
         return authorService.getAllAuthors();
@@ -45,6 +47,7 @@ public class AuthorController {
         return authorService.getAuthorById(authorId);
     }
 
+    //UPDATE
     @RequestMapping(value = "/{authorId}", method= RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> updateAuthorName(@PathVariable("authorId") Long authorId, @RequestBody String author){
@@ -53,6 +56,7 @@ public class AuthorController {
     }
 
 
+    //DELETE
     @RequestMapping(value = "/{authorId}", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteAuthor(@PathVariable("authorId") Long authorId){
