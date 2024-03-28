@@ -34,6 +34,7 @@ public class BookController {
     }
 
     //READ
+    /*
     @GetMapping
     public ResponseEntity<HttpResponse> getBooks(
             @RequestParam Optional<Integer> page,
@@ -55,6 +56,28 @@ public class BookController {
                         .build());
     }
 
+     */
+
+    @GetMapping
+    public ResponseEntity<HttpResponse> getBooks(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> size,
+            @RequestParam Optional<String> sortBy,
+            @RequestParam Optional<String> sortDirection
+    ) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("page", bookService.getBooks(
+                                page.orElse(0),
+                                size.orElse(12),
+                                sortBy.orElse("id"),
+                                sortDirection.orElse("ASC"))))
+                        .message("Books retrieved")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
+    }
 
     @GetMapping("/author")
     public ResponseEntity<List<Book>> getAllBooksOfAuthor(@RequestParam(name = "id") Long authorId){
@@ -71,16 +94,12 @@ public class BookController {
 
     @GetMapping("/categories")
     public ResponseEntity<HttpResponse> getAllBooksOfCategories(
-            @RequestParam(name = "ids") Optional<List<Long>> categoryIds,
-            @RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size) {
+            @RequestParam(name = "ids") Optional<List<Long>> categoryIds) {
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(now().toString())
                         .data(Map.of("page", bookService.getAllBooksOfCategories(
-                                categoryIds.orElse(null),
-                                page.orElse(0),
-                                size.orElse(12))))
+                                categoryIds.orElse(null))))
                         .message("Libri recuperati")
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())

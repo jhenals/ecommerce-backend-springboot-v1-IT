@@ -6,6 +6,7 @@ import com.progetto.ecommercebackend.repositories.AuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.repositories.CategoryRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -52,13 +54,6 @@ public class BookService {
     }
 
 
-    public Page<Book> findAll(int pageNo, int pageSize, String sortBy, String sortDirection){
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-
-        return bookRepository.findAll(pageable);
-    }
-
     public List<Book> getAllBooksOfAuthor(Long authorId) {
         Optional<Author> authorOptional =  authorRepository.findById(authorId);
         if( authorOptional.isPresent() ){
@@ -84,25 +79,27 @@ public class BookService {
     }
 
     public void updateBook(long id, Book book) {
-        Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
-        if(bookOptional.isPresent()) {
+        try{
+            Book existingBook  = bookRepository.findById(book.getId()).orElseThrow(() -> new EntityNotFoundException("Libro non trovato"));
             Set<Author> authors = book.getAuthors();
-            Book newBook = bookOptional.get();
-            newBook = book;
-            newBook.setAuthors(authors);
-            newBook.setCategory(book.getCategory());
-            bookRepository.save(newBook);
-        }else{
-            throw  new CustomException("Libro non trovato.");
+            existingBook.setTitle(book.getTitle());
+            existingBook.setPrice(book.getPrice());
+            existingBook.setDiscount(book.getDiscount());
+            existingBook .setAuthors(authors);
+            existingBook .setCategory(book.getCategory());
+            bookRepository.save(existingBook );
+        }catch (ObjectOptimisticLockingFailureException e) {
+            throw new CustomException("Operazione fallita. Il libro è stato modificato o aggiornato da un altro utente. Si prega di riprovare.");
         }
     }
 
     public void deleteBookById(long id) {
-        Optional<Book> bookOptional = Optional.ofNullable(bookRepository.findBookById(id));
+        Optional<Book> bookOptional = bookRepository.findById(id);
         if( bookOptional.isPresent() ){
+            Book book = bookOptional.get();
             Set<Author>authors = bookOptional.get().getAuthors();
             for( Author a : authors ){
-                a.getBooks().remove(bookOptional.get());
+                a.getBooks().remove(book);
                 authorRepository.save(a);
             }
             bookRepository.deleteById(id);
@@ -111,36 +108,18 @@ public class BookService {
         }
     };
 
-    public void assignBookToAuthors(Long bookId, List<Long> authorIds) {
-        Set<Author> authors = new HashSet<>();
-        Optional<Book> bookOptional = bookRepository.findById(bookId);
-        if( bookOptional.isPresent() ){
-            Book book = bookOptional.get();
-            for ( Long authorId : authorIds ){
-                Optional<Author> authorOptional = authorRepository.findById(authorId);
-                if (authorOptional.isPresent() ) {
-                    Author author = authorOptional.get();
-                    authors.add(author);
-                    author.getBooks().add(book);
-                    authorRepository.save(author);
-                }
-            }
-            book.setAuthors(authors);
-            bookRepository.save(book);
-        }
+    public Page<Book> getBooks( int page, int size, String sortBy, String sortDirection) {
+        log.info("Fetching books for page {} of size {}", page, size);
+        return bookRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy)));
     }
 
-    public Page<Book> getBooks( int page, int size, String sortBy, String sortDirection){
-        log.info("Fetching books for page {} of size {}", page, size);
-        return bookRepository.findAll( PageRequest.of(page,size, Sort.by(Sort.Direction.fromString(sortDirection), sortBy)));
-    }
 
     public Book getBookById(Long bookId) {
         return bookRepository.findBookById(bookId);
     }
 
-    public Page<Book> getAllBooksOfCategories(List<Long> categoryIds, int page, int size) {
-        Pageable pageable =  PageRequest.of(page, size);
+    public Page<Book> getAllBooksOfCategories(List<Long> categoryIds) {
+        Pageable pageable =  PageRequest.of(0, 12);
         List<Book> bookList = new ArrayList<>();
         for( Long categoryId : categoryIds ){
             bookList.addAll( bookRepository.findByCategoryId(categoryId));

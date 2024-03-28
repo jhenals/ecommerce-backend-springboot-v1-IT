@@ -30,6 +30,12 @@ public class Book {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    /*
+    @Version
+    private int version; // Version field for optimistic locking
+
+     */
+
     @Column(name = "title")
     private String title;
 

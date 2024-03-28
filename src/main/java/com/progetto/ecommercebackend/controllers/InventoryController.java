@@ -1,5 +1,6 @@
 package com.progetto.ecommercebackend.controllers;
 
+import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.services.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,9 @@ public class InventoryController {
     //UPDATE
     @RequestMapping(value = ("inventory-quantity"), method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){
-        inventoryService.updateBookQuantityInInventory(bookId, qty);
-        return new ResponseEntity<>("La quantità del libro è stata aggiornata", HttpStatus.OK);
+    public ResponseEntity<Book> updateBookQuantityInInventory(@RequestParam Long bookId, @RequestParam Integer qty){
+        Book book = inventoryService.updateBookQuantityInInventory(bookId, qty);
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     //UPDATE

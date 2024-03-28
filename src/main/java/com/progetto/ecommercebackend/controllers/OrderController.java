@@ -23,11 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.time.LocalDateTime.now;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
@@ -57,7 +55,7 @@ public class OrderController {
         try{
             return new ResponseEntity<>( orderService.checkout(userId, orderform), HttpStatus.OK);
         }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pagamento non riuscito!", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Check-out non è andato a buon fine!", e);
         }
     }
 
@@ -89,9 +87,7 @@ public class OrderController {
     }
 
 
-
     //UPDATE
-
     @RequestMapping(value = "/order", method = RequestMethod.PUT)
     public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody OrderStatusDTO orderStatus) {
         try{

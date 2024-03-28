@@ -6,7 +6,9 @@ import com.progetto.ecommercebackend.repositories.AuthorRepository;
 import com.progetto.ecommercebackend.repositories.BookRepository;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,18 +34,14 @@ public class AuthorService {
         return authorRepository.save(newAuthor);
     }
 
-    public Author updateAuthorName(Long id, String author) {
+    public Author updateAuthorName(Long id, String authorName) {
         Optional<Author> authorOptional = authorRepository.findById(id);
-        if( authorOptional.isPresent()){
-            Author updatedAuthor = new Author();
-            updatedAuthor.setId(authorOptional.get().getId());
-            updatedAuthor.setName(author);
-            updatedAuthor.setBooks(authorOptional.get().getBooks());
-            authorRepository.deleteById(id);
-            return authorRepository.save(updatedAuthor);
-        }else{
-            throw new CustomException("L'autore con l'ID "+ id + " non è stato trovato.");
+        if( authorOptional.isEmpty() ){
+            throw new CustomException("L'autore con ID "+ id + " è stato modificato.");
         }
+        Author author = authorOptional.get();
+        author.setName(authorName);
+        return authorRepository.save(author);
     }
 
     public void deleteAuthor(Long authorId) {
