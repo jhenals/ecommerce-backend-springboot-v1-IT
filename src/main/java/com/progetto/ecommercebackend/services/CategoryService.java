@@ -41,9 +41,10 @@ public class CategoryService {
     }
 
 
-    public void deleteCategoryById(Long id) {
+    public String deleteCategoryById(Long id) {
         try{
             categoryRepository.deleteCategoryById(id);
+            return "Categoria eliminata";
         }catch( CustomException e){
             throw new CustomException("La categoria non può essere eliminata.");
         }

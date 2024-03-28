@@ -97,12 +97,15 @@ public class OrderController {
 
     //UPDATE
     @RequestMapping(value = "/order", method = RequestMethod.PUT)
-    public ResponseEntity updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody OrderStatusDTO orderStatus) {
-        try{
-            return new ResponseEntity<>( orderService.updateOrderStatus(orderId, orderStatus), HttpStatus.OK);
-        }  catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Stato dell'ordine non aggiornato!", e);
-        }
+    public ResponseEntity<HttpResponse> updateOrderStatus( @RequestParam(name = "id") Long orderId, @Valid @RequestBody OrderStatusDTO orderStatus) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("order", orderService.updateOrderStatus(orderId, orderStatus)))
+                        .message("Stato dell'ordine aggiornato.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
     @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT)

@@ -28,9 +28,15 @@ public class BookController {
     //CREATE
     @PostMapping
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<Book> createNewBook(@RequestBody Book book, @RequestParam List<Long> authorIds) {
-        bookService.addNewBook(book, authorIds);
-        return new ResponseEntity<>(book, HttpStatus.CREATED);
+    public ResponseEntity<HttpResponse> createNewBook(@RequestBody Book book, @RequestParam List<Long> authorIds) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("book", bookService.addNewBook(book, authorIds)))
+                        .message("Un nuovo libro è stato aggiunto nel database.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
     //READ

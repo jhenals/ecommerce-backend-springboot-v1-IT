@@ -44,9 +44,10 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
-    public void deleteAuthor(Long authorId) {
+    public String deleteAuthor(Long authorId) {
         try{
             authorRepository.deleteById(authorId);
+            return "Autore eliminato.";
         }catch (CustomException e){
             throw new CustomException("Cancellazione dell'autore nel database non riuscita.");
         }

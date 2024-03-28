@@ -34,12 +34,12 @@ public class InventoryService {
         return book.getQuantity();
     }
 
-    public void incrementNumPurchases(Long bookId) {
+    public Book incrementNumPurchases(Long bookId) {
         try{
             Optional<Book> book = bookRepository.findById(bookId);
             if(book.isPresent()) {
                 book.get().setNumPurchases(book.get().getNumPurchases()+1);
-                bookRepository.save(book.get());
+                return bookRepository.save(book.get());
             }else{
                 throw new CustomException("Libro non trovato.");
             }
