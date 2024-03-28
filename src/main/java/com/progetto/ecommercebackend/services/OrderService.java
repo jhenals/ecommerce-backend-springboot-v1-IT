@@ -166,6 +166,7 @@ public class OrderService {
     public Order checkout(String userId, OrderForm orderForm) {
         UserRepresentation userRepresentation = keycloakService.getUserById(userId).orElseThrow(
                 () -> new CustomException("Utente non trovato."));
+        Optional<User> userOptional = userRepository.findById(userId);
 
         Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
         if (orderForm.getRecipientName() == null ||
@@ -176,6 +177,7 @@ public class OrderService {
 
         Order order = new Order();
         order.setId(pendingCart.getId());
+        order.setUser(userOptional.get());
         order.setDateCreated(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.PROCESSING);
         order.setRecipientName(orderForm.getRecipientName());
@@ -193,6 +195,8 @@ public class OrderService {
         Optional<User> userOptional = userRepository.findById(id);
         Order newPendingCart = new Order();
         newPendingCart.setUser(userOptional.get());
+        newPendingCart.setDateCreated(LocalDateTime.now());
+        newPendingCart.setTotalAmount(0D);
         newPendingCart.setOrderStatus(OrderStatus.PENDING);
         orderRepository.save(newPendingCart);
     }

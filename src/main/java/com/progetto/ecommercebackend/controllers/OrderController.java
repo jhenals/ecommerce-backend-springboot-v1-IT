@@ -24,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
+import static java.time.LocalDateTime.now;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/orders")
@@ -40,23 +42,29 @@ public class OrderController {
 
     //CREATE
     @PostMapping("/{userId}")
-    public ResponseEntity addBookToCart(@Valid @RequestBody Book book, @PathVariable("userId") String userId ) {
-        try {
-            return new ResponseEntity<>(orderService.addBookToCart(book, userId), HttpStatus.OK);
-        } catch (CustomException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Libro non può essere aggiunto al carrello!", e);
-        }
+    public ResponseEntity<HttpResponse> addBookToCart(@Valid @RequestBody Book book, @PathVariable("userId") String userId ) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("item", orderService.addBookToCart(book, userId)))
+                        .message("Libro aggiunto nel carrello.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 
     @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.POST)
-    public ResponseEntity checkout(@PathVariable("userId") String userId,
+    public ResponseEntity<HttpResponse> checkout(@PathVariable("userId") String userId,
                                    @RequestBody OrderForm orderform) {
-        try{
-            return new ResponseEntity<>( orderService.checkout(userId, orderform), HttpStatus.OK);
-        }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Check-out non è andato a buon fine!", e);
-        }
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("ordine", orderService.checkout(userId, orderform)))
+                        .message("Checkout è andato a buon fine.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 
@@ -98,41 +106,55 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/{userId}/incr-quantity/book", method = RequestMethod.PUT)
-    public ResponseEntity increaseBookQtyInCart(@PathVariable("userId") String userId, @RequestParam(name = "id") Long bookId)  {
-        try{
-            return new ResponseEntity<>( orderService.increaseBookQtyInCart(userId, bookId), HttpStatus.OK);
-        }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nell'aggiunta della quantità del libro nel carrello.", e);
-        }
-
+    public ResponseEntity<HttpResponse> increaseBookQtyInCart(@PathVariable("userId") String userId, @RequestParam(name = "id") Long bookId)  {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("book", orderService.increaseBookQtyInCart(userId, bookId)))
+                        .message("Libro aggiunto al carrello.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
     @RequestMapping(value = "/{userId}/decr-quantity", method = RequestMethod.PUT)
-    public ResponseEntity decreaseBookQtyInCart(@PathVariable("userId") String userId, @Valid @RequestBody Book book) {
-        try{
-            return new ResponseEntity<>( orderService.removeBookFromCart(book,userId), HttpStatus.OK);
-        }catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Errore nella rimozione dei libri dal carrello.", e);
-        }
+    public ResponseEntity<HttpResponse> decreaseBookQtyInCart(@PathVariable("userId") String userId, @Valid @RequestBody Book book) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("book", orderService.removeBookFromCart(book,userId)))
+                        .message("Libro eliminato dal carrello.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 
     //DELETE
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity removeBookFromCart(@Valid @RequestBody  Book book,@PathVariable("userId") String userId ) {
-        try{
-            return new ResponseEntity<>( orderService.removeBookFromCart(book, userId), HttpStatus.OK);
-        }  catch(CustomException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Errore nella rimozione dei libri dal carrello.", e);
-        }
+    public  ResponseEntity<HttpResponse> removeBookFromCart(@Valid @RequestBody  Book book,@PathVariable("userId") String userId ) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("book",orderService.removeBookFromCart(book, userId)))
+                        .message("Libro eliminato dal carrello.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 
     @RequestMapping(value = "/{userId}/reset", method = RequestMethod.DELETE)
-    public ResponseEntity resetCart(@PathVariable("userId") String userId){
+    public ResponseEntity<HttpResponse> resetCart(@PathVariable("userId") String userId){
         Order pendingCart = getPendingCart(userId);
-        pendingCart= orderService.resetCart(userId, pendingCart.getId());
-        return new ResponseEntity<>(pendingCart, HttpStatus.OK);
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("carrello",orderService.resetCart(userId, pendingCart.getId())))
+                        .message("Carrello ripristinato.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 

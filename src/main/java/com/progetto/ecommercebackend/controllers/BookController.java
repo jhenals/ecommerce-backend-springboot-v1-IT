@@ -34,31 +34,7 @@ public class BookController {
     }
 
     //READ
-    /*
-    @GetMapping
-    public ResponseEntity<HttpResponse> getBooks(
-            @RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size,
-            @RequestParam Optional<String> sortBy,
-            @RequestParam Optional<String> sortDirection
-            ) {
-        return ResponseEntity.ok().body(
-                HttpResponse.builder()
-                        .timeStamp(now().toString())
-                        .data(Map.of("page", bookService.getBooks(
-                                page.orElse(0),
-                                size.orElse(12),
-                                sortBy.orElse("id"),
-                                sortDirection.orElse("ASC"))))
-                        .message("Books retrieved")
-                        .status(HttpStatus.OK)
-                        .statusCode(HttpStatus.OK.value())
-                        .build());
-    }
-
-     */
-
-    @GetMapping
+   @GetMapping
     public ResponseEntity<HttpResponse> getBooks(
             @RequestParam Optional<Integer> page,
             @RequestParam Optional<Integer> size,
@@ -119,20 +95,32 @@ public class BookController {
 
 
     //UPDATE
-    @RequestMapping(value = "/book", method = RequestMethod.PUT)
+    @RequestMapping(value = "", method = RequestMethod.PUT)
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> updateBook(@RequestParam long id, @RequestBody @Valid Book book) {
-        bookService.updateBook(id, book);
-        return new ResponseEntity<>("Libro con ID " + id + " è stato aggiornato con successo.", HttpStatus.OK);
+    public ResponseEntity<HttpResponse> updateBook(@RequestParam long id, @RequestBody @Valid Book book) {
+         return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("book:",bookService.updateBook(id, book)))
+                        .message("Libro aggiornato")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 
     //DELETE
     @RequestMapping(value = "/book", method = RequestMethod.DELETE)
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> deleteBook(@RequestParam long id) {
-        bookService.deleteBookById(id);
-        return new ResponseEntity<>("Libro con ID " + id + " è stato eliminato con successo.", HttpStatus.OK);
+    public ResponseEntity<HttpResponse> deleteBook(@RequestParam long id) {
+        return ResponseEntity.ok().body(
+                HttpResponse.builder()
+                        .timeStamp(now().toString())
+                        .data(Map.of("page",bookService.deleteBookById(id)))
+                        .message("Libro eliminato")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build());
     }
 
 }

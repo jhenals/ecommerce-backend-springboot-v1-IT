@@ -78,22 +78,22 @@ public class BookService {
         return bestSellingBooks;
     }
 
-    public void updateBook(long id, Book book) {
-        try{
-            Book existingBook  = bookRepository.findById(book.getId()).orElseThrow(() -> new EntityNotFoundException("Libro non trovato"));
-            Set<Author> authors = book.getAuthors();
-            existingBook.setTitle(book.getTitle());
-            existingBook.setPrice(book.getPrice());
-            existingBook.setDiscount(book.getDiscount());
-            existingBook .setAuthors(authors);
-            existingBook .setCategory(book.getCategory());
-            bookRepository.save(existingBook );
+    public Book updateBook(long id, Book book) {
+       /* try{
+
         }catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomException("Operazione fallita. Il libro è stato modificato o aggiornato da un altro utente. Si prega di riprovare.");
         }
+
+        */
+        Book existingBook = bookRepository.findBookById(id);
+        book.setAuthors(existingBook.getAuthors());
+        book.setCategory(existingBook.getCategory());
+        return bookRepository.save(book );
+
     }
 
-    public void deleteBookById(long id) {
+    public String deleteBookById(long id) {
         Optional<Book> bookOptional = bookRepository.findById(id);
         if( bookOptional.isPresent() ){
             Book book = bookOptional.get();
@@ -102,7 +102,8 @@ public class BookService {
                 a.getBooks().remove(book);
                 authorRepository.save(a);
             }
-            bookRepository.deleteById(id);
+             bookRepository.deleteById(id);
+            return "Libro eliminato :"+ book;
         }else{
             throw new CustomException("Libro non trovato.");
         }
