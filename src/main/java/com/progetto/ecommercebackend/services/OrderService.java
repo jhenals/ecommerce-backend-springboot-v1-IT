@@ -164,15 +164,22 @@ public class OrderService {
 
     @Transactional
     public Order checkout(String userId, OrderForm orderForm) {
+        if (orderForm.getRecipientName() == null ||
+                orderForm.getShippingAddress() == null ||
+                orderForm.getPhoneNumber() == null) {
+            throw new CustomException("Errore durante il check-out. Campi richiesti mancanti.");
+        }
+
         UserRepresentation userRepresentation = keycloakService.getUserById(userId).orElseThrow(
                 () -> new CustomException("Utente non trovato."));
         Optional<User> userOptional = userRepository.findById(userId);
 
         Order pendingCart = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.PENDING);
-        if (orderForm.getRecipientName() == null ||
-                orderForm.getShippingAddress() == null ||
-                orderForm.getPhoneNumber() == null) {
-            throw new CustomException("Errore durante il check-out. Campi richiesti mancanti.");
+        List<OrderBook> books = orderBookRepository.findAllByOrderId(pendingCart.getId());
+        for( OrderBook ob : books ){
+            Book b = ob.getBook();
+            b.setNumPurchases(ob.getBook().getNumPurchases() + 1);
+            bookRepository.save(b);
         }
 
         Order order = new Order();
@@ -216,6 +223,17 @@ public class OrderService {
         if(orderOptional.isPresent()) {
             Order updateOrder = orderOptional.get();
             updateOrder.setOrderStatus(orderStatus.getOrderStatus());
+
+
+            if( orderStatus.getOrderStatus() == OrderStatus.CANCELED ){
+                List<OrderBook> orderBookList = orderBookRepository.findAllByOrderId(orderId);
+                for( OrderBook ob : orderBookList ){
+                    Book b = ob.getBook();
+                    b.setQuantity(b.getQuantity()+ ob.getQuantity());
+                    b.setNumPurchases(b.getNumPurchases()-1);
+                    bookRepository.save(b);
+                }
+            }
             return  orderRepository.save(updateOrder);
         }else{
             throw new CustomException("Impossibile aggiornare lo stato dell'ordine.");
