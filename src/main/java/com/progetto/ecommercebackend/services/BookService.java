@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.*;
 
 @Service
-@Transactional
 @Slf4j
 public class BookService {
     @Autowired
@@ -37,6 +36,7 @@ public class BookService {
     @Autowired
     AuthorRepository authorRepository;
 
+    @Transactional
     public Book addNewBook( @NotNull Book book, @NotNull List<Long> authorIds) {
         Set<Author> authors = new HashSet<>();
         for ( Long authorId : authorIds ){
@@ -78,14 +78,8 @@ public class BookService {
         return bestSellingBooks;
     }
 
+    @Transactional
     public Book updateBook(long id, Book book) {
-       /* try{
-
-        }catch (ObjectOptimisticLockingFailureException e) {
-            throw new CustomException("Operazione fallita. Il libro è stato modificato o aggiornato da un altro utente. Si prega di riprovare.");
-        }
-
-        */
         Book existingBook = bookRepository.findBookById(id);
         book.setAuthors(existingBook.getAuthors());
         book.setCategory(existingBook.getCategory());
@@ -93,6 +87,7 @@ public class BookService {
 
     }
 
+    @Transactional
     public String deleteBookById(long id) {
         Optional<Book> bookOptional = bookRepository.findById(id);
         if( bookOptional.isPresent() ){
