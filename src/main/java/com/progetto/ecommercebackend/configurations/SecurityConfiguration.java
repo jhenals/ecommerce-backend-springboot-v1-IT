@@ -25,25 +25,6 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final JwtAuthConverter jwtAuthConverter;
-    /*
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
-
-    @Bean
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new RegisterSessionAuthenticationStrategy(sessionRegistry());
-    }
-
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-
-     */
-
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -55,7 +36,6 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/books/**").permitAll()
                         .requestMatchers("/api/v1/categories/**").permitAll()
                         .requestMatchers("/api/v1/authors/**").permitAll()
-                        //.requestMatchers("/admin/**").hasRole("admin") //ADMIN
                         .anyRequest().authenticated()
                 );
         http
