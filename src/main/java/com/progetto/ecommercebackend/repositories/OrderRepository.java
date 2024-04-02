@@ -31,7 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             @Param("userId") String userId,
             @Param("orderStatus") OrderStatus orderStatus);
 
-    @Query("SELECT o FROM Order  o WHERE o.orderStatus!= 'PENDING' ")
+    @Query("SELECT o FROM Order  o WHERE o.orderStatus!= 'PENDING' ORDER BY o.dateCreated DESC")
     List<Order> findAllByOrderStatus();
 
     void deleteByUserId(String userId);

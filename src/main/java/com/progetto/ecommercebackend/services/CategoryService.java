@@ -19,6 +19,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
+
     public Category addNewCategory(String category) {
         String catValue="";
         if( category.contains(" ")){

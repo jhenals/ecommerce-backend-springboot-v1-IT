@@ -118,17 +118,24 @@ public class KeycloakService {
     }
 
     public UserRepresentation updateUserAccount(String userId, String firstname, String lastname) {
+     //   log.info("Updated firstname:{}  and lastname:{} of id:{}", firstname,lastname, userId);
         RealmResource realmResource = keycloak.realm(realm);
-        Optional<User> user = userRepository.findById(userId);
+
         UserRepresentation userRep = new UserRepresentation();
         userRep.setFirstName(firstname);
-        user.get().setFirstName(firstname);
         userRep.setLastName(lastname);
-        user.get().setLastName(lastname);
         UsersResource usersResource = realmResource.users();
         usersResource.get(userId).update(userRep);
-        userRepository.save(user.get());
 
+        Optional<User> userOptional = userRepository.findById(userId);
+        if( userOptional.isEmpty() ){
+            throw new CustomException("Utente non trovato.");
+        }else{
+            User user = userOptional.get();
+            user.setFirstName(firstname);
+            user.setLastName(lastname);
+            userRepository.save(user);
+        }
         return userRep;
     }
 
