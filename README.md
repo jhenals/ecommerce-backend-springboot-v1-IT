@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains the source code for an E-commerce web application built using SpringBoot for the backend, Angular for the frontend, Keycloak for authentication and authorization, and MySQL for the database. The application is specifically tailored for an online bookstore.
+This repository contains the **backend** source code for an E-commerce web application built using SpringBoot for the backend, Angular for the frontend, Keycloak for authentication and authorization, and MySQL for the database. The application is specifically tailored for an online bookstore.
 
 ## Features
 
