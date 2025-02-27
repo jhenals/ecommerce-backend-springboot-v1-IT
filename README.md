@@ -135,5 +135,14 @@ password: MyPassword$
 - Use the provided login interface to authenticate. You can use the default admin credentials for testing or create a new account.
 - Navigate through the bookstore, add products to your cart, and complete the checkout process.
 
+### Accounts available in Keycloak
+- (ADMIN) Username: yoda@example.com Password: admin
+- (USER) Username: ani@example.com Password: darth
+- (USER) Username: ahsokatano@example.com Password: ahsoka
+- (USER) Username: obiwan@example.com Password: obiwan
+- (USER) Username: padme@example.com Password: testuser
+- (USER) Username: testuser1@example.com Password: testuser
+
+
 ---
 
