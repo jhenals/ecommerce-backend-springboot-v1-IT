@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.KeycloakSecurityContext;
 import org.springframework.http.HttpStatus;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -38,6 +39,17 @@ public class KeycloakController {
 
 
     //READ
+
+    @GetMapping("/keycloak/currentUser")
+    public String getUserId(){
+        return keycloakService.getCurrentUserId();
+    }
+
+    @GetMapping("/keycloak/context")
+    public KeycloakSecurityContext getSecurityContext(){
+        return keycloakService.getSecurityContext();
+    }
+
     @GetMapping("/keycloak/users")
     @PreAuthorize("hasRole('ROLE_admin')")
     public List<User> getAllUsers(){

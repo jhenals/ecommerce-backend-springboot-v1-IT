@@ -5,16 +5,26 @@ import com.progetto.ecommercebackend.entities.User;
 import com.progetto.ecommercebackend.repositories.OrderBookRepository;
 import com.progetto.ecommercebackend.repositories.OrderRepository;
 import com.progetto.ecommercebackend.repositories.UserRepository;
+import com.progetto.ecommercebackend.support.KeycloakIdentityProvider;
 import com.progetto.ecommercebackend.support.exceptions.CustomException;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.admin.client.resource.*;
 import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.kie.internal.identity.IdentityProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.security.core.Authentication;
+
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,6 +46,35 @@ public class KeycloakService {
     private String realm;
     @Autowired
     KeycloakConfig keycloak;
+
+
+    public String getCurrentUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        KeycloakAuthenticationToken token = (KeycloakAuthenticationToken) authentication;
+        String userId = authentication.getName(); //this will be keycloak id
+        if (token.getPrincipal() instanceof KeycloakPrincipal) {
+            KeycloakPrincipal<KeycloakSecurityContext> kp = (KeycloakPrincipal<KeycloakSecurityContext>) token.getPrincipal();
+            //option to use username instead of id
+            if (kp.getKeycloakSecurityContext().getToken() != null && kp.getKeycloakSecurityContext().getToken().getPreferredUsername() != null) {
+                //userId = kp.getKeycloakSecurityContext().getToken().getPreferredUsername(); //replace with username - could be changed to e.g. email if desired
+                userId = kp.getKeycloakSecurityContext().getToken().getId();
+            }
+        }
+        //setAuthenticatedUserId(userId);
+       //return super.authenticate(authentication);
+        return userId;
+    }
+
+
+    public KeycloakSecurityContext getSecurityContext(){
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        if (context != null && context.getAuthentication() != null) {
+            KeycloakAuthenticationToken authentication = (KeycloakAuthenticationToken) context.getAuthentication();
+            return authentication.getAccount().getKeycloakSecurityContext();
+        }
+        return null;
+    }
 
     public List<User> mapUsers(List<UserRepresentation> userRepresentations) {
         List<User> users = new ArrayList<>();

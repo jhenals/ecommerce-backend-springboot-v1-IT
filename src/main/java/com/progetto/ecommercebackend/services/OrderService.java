@@ -162,7 +162,7 @@ public class OrderService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Order checkout(String userId, OrderForm orderForm) {
         if (orderForm.getRecipientName() == null ||
                 orderForm.getShippingAddress() == null ||

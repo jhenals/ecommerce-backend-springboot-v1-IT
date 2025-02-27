@@ -4,6 +4,7 @@ import com.progetto.ecommercebackend.entities.Book;
 import com.progetto.ecommercebackend.entities.Order;
 import com.progetto.ecommercebackend.entities.OrderBook;
 import com.progetto.ecommercebackend.services.BookService;
+import com.progetto.ecommercebackend.services.KeycloakService;
 import com.progetto.ecommercebackend.services.OrderBookService;
 import com.progetto.ecommercebackend.services.OrderService;
 import com.progetto.ecommercebackend.support.common.OrderForm;
@@ -32,6 +33,9 @@ import static java.time.LocalDateTime.now;
 public class OrderController {
 
     @Autowired
+    KeycloakService keycloakService;
+
+    @Autowired
     BookService bookService;
 
     @Autowired
@@ -54,9 +58,9 @@ public class OrderController {
     }
 
 
-    @RequestMapping(value ="/{userId}/checkout", method = RequestMethod.POST)
-    public ResponseEntity<HttpResponse> checkout(@PathVariable("userId") String userId,
-                                   @RequestBody OrderForm orderform) {
+    @RequestMapping(value ="/checkout", method = RequestMethod.POST)
+    public ResponseEntity<HttpResponse> checkout(@RequestBody OrderForm orderform) {
+        String userId = keycloakService.getCurrentUserId();
         return ResponseEntity.ok().body(
                 HttpResponse.builder()
                         .timeStamp(now().toString())
