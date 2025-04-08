@@ -99,6 +99,7 @@ On Windows, run:
 Access Keycloak Admin Console at ```http://localhost:8080/admin```. <br/>
 username: keycloak <br/>
 password: MyPassword$
+PS: Make sure your database is already running before configuring Keycloak
    
 4. Navigate to the backend directory and run the SpringBoot application:
 
@@ -131,7 +132,7 @@ password: MyPassword$
 
 ## Usage
 
-- Visit `http://localhost:4200` in your web browser to access the application.
+- Visit `http://localehost:4200` in your web browser to access the application.
 - Use the provided login interface to authenticate. You can use the default admin credentials for testing or create a new account.
 - Navigate through the bookstore, add products to your cart, and complete the checkout process.
 
