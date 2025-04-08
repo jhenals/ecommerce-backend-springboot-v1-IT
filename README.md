@@ -96,9 +96,6 @@ On Windows, run:
    kc.bat start-dev
    ```
 
-Access Keycloak Admin Console at ```http://localhost:8080/admin```. <br/>
-username: keycloak <br/>
-password: MyPassword$
 PS: Make sure your database is already running before configuring Keycloak
    
 4. Navigate to the backend directory and run the SpringBoot application:
